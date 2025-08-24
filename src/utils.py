@@ -1,5 +1,4 @@
 import docker
-import os
 from typing import Literal
 
 
@@ -51,10 +50,10 @@ if __name__ == "__main__":
     from pprint import pprint
     import requests
 
-    run_docker_container("dplp")
-    resp = requests.post(
-        "http://localhost:5000/dplp",
-        json={"text": "Some text to parse"},
-        headers={"Content-Type": "application/json"}
-    )
-    pprint(resp.json(), sort_dicts=False)
+    # run_docker_container("dplp")
+    # resp = requests.post(
+    #     "http://localhost:5000/dplp",
+    #     json={"text": "Some text to parse"},
+    #     headers={"Content-Type": "application/json"}
+    # )
+    # pprint(resp.json(), sort_dicts=False)

@@ -1,0 +1,54 @@
+<rst>
+	<header>
+		<relations>
+			<rel name="antithesis" type="rst"/>
+			<rel name="attribution" type="rst"/>
+			<rel name="background" type="rst"/>
+			<rel name="cause" type="rst"/>
+			<rel name="circumstance" type="rst"/>
+			<rel name="concession" type="rst"/>
+			<rel name="condition" type="rst"/>
+			<rel name="conjunction" type="multinuc"/>
+			<rel name="contrast" type="multinuc"/>
+			<rel name="e-elaboration" type="rst"/>
+			<rel name="elaboration" type="rst"/>
+			<rel name="enablement" type="rst"/>
+			<rel name="evaluation-n" type="rst"/>
+			<rel name="evaluation-s" type="rst"/>
+			<rel name="evidence" type="rst"/>
+			<rel name="interpretation" type="rst"/>
+			<rel name="joint" type="multinuc"/>
+			<rel name="justify" type="rst"/>
+			<rel name="list" type="multinuc"/>
+			<rel name="motivation" type="rst"/>
+			<rel name="otherwise" type="rst"/>
+			<rel name="preparation" type="rst"/>
+			<rel name="purpose" type="rst"/>
+			<rel name="reason-N" type="rst"/>
+			<rel name="reason" type="rst"/>
+			<rel name="restatement" type="rst"/>
+			<rel name="result" type="rst"/>
+			<rel name="sameunit" type="multinuc"/>
+			<rel name="sequence" type="multinuc"/>
+			<rel name="solutionhood" type="rst"/>
+			<rel name="summary" type="rst"/>
+		</relations>
+	</header>
+	<body>
+		<segment id="1" parent="14" relname="span">&lt;PAR_A1&gt; Gemeinsam mit Monika Trümper erkunden wir erstmals bei Forschergeist die Archäologie . &lt;\PAR_A1&gt;</segment>
+		<segment id="2" parent="13" relname="list">&lt;PAR_A2&gt; Die Professorin für Klassische Archäologie an der FU Berlin erforscht die Geschichte des antiken Bades- und der damaligen Körperkultur . &lt;\PAR_A2&gt;</segment>
+		<segment id="3" parent="13" relname="list">&lt;PAR_A3&gt; Sie beschäftigt sich mit der Planung und Entwicklung antiker Städte , Platzanlagen , der Bade- und Wohnkultur , der Bedeutung und dem Management von Wasser in antiken Heiligtümern , den archäologischen Quellen zur Wirtschaft sowie der archäologischen Erforschung der Sklaverei . &lt;\PAR_A3&gt;</segment>
+		<segment id="4" parent="9" relname="span">&lt;PAR_A4&gt; Wir lernen in dieser Episode , wie sehr sich die Arbeitsbedingungen von Archäologen mit dem Fortschreiten neuer Technologien verändern . &lt;\PAR_A4&gt;</segment>
+		<segment id="5" parent="12" relname="conjunction">&lt;PAR_A5&gt; Der Einsatz von Drohnen oder neue Möglichkeiten in der Fotografie ermöglichen es , Grabungsstätten und Fundstücke viel detaillierter als bisher zu erfassen</segment>
+		<segment id="6" parent="12" relname="conjunction">und für die ( wissenschaftliche ) Nachwelt zu dokumentieren . &lt;\PAR_A5&gt;</segment>
+		<segment id="7" parent="10" relname="span">&lt;PAR_A6&gt; Im Rahmen eines Forschungsprojekts für den Exzellenzcluster Topoi - einem altertumswissenschaftlichen Forschungsverbund von Freier Universität und Humboldt-Universität - hat Monika Trümper in zwei römischen Bädern in Pompeji in den vergangenen Jahren Grabungen durchgeführt . &lt;\PAR_A6&gt;</segment>
+		<segment id="8" parent="7" relname="elaboration">&lt;PAR_A7&gt; Hier erforschte sie , wie Heiz- und Gewölbetechnik sowie Wasserversorgung über Jahrhunderte immer mehr perfektioniert worden sind . &lt;\PAR_A7&gt;</segment>
+		<group id="9" type="span" parent="11" relname="span"/>
+		<group id="10" type="span" parent="9" relname="circumstance"/>
+		<group id="11" type="span" parent="15" relname="span"/>
+		<group id="12" type="multinuc" parent="4" relname="evidence"/>
+		<group id="13" type="multinuc" parent="1" relname="e-elaboration"/>
+		<group id="14" type="span" parent="11" relname="background"/>
+		<group id="15" type="span" />
+	</body>
+</rst>
