@@ -1,6 +1,8 @@
+from bs4 import BeautifulSoup
 import docker
 import json
 import os
+from pathlib import Path
 import subprocess
 import time
 from typing import Literal, Union
@@ -132,6 +134,90 @@ def write_to_json(
             + "Skipping write."
         )
         return
+
+
+def load_texts() -> dict[str, list[str]]:
+    """Returns a dictionary of raw texts as lists of sentences, keyed by their
+    files' base-names."""
+    texts = {}
+    for p in Path.joinpath(
+        Path(os.getcwd()).parent, Path("data/texts/")
+    ).glob("*.txt"):
+        with open(p, "r", encoding="utf-8") as f:
+            texts[p.stem] = [
+                l.strip() for l in f.readlines() if len(l.strip()) > 0
+            ]
+    return texts
+
+
+def load_gold_annotations() -> dict[str, str]:
+    """Returns a dictionary of gold annotations as strings (.rs3 XML-format),
+    keyed by their files' base-names."""
+    annotations = {}
+    for p in Path.joinpath(
+        Path(os.getcwd()).parent, Path("data/gold/")
+    ).glob("*.rs3"):
+        with open(p, "r", encoding="utf-8") as f:
+            annotations[p.stem] = f.read().strip()
+    return annotations
+
+
+def make_rs3() -> str:
+    soup = BeautifulSoup(features="xml")
+    soup.append(soup.new_tag("rst"))
+    soup.rst.extend([soup.new_tag("header"), soup.new_tag("body")])
+
+    relations = soup.header.append(soup.new_tag("relations"))
+    for rel in [
+        {'name': 'antithesis', 'type': 'rst'},
+        {'name': 'attribution', 'type': 'rst'},
+        {'name': 'background', 'type': 'rst'},
+        {'name': 'cause', 'type': 'rst'},
+        {'name': 'circumstance', 'type': 'rst'},
+        {'name': 'concession', 'type': 'rst'},
+        {'name': 'condition', 'type': 'rst'},
+        {'name': 'conjunction', 'type': 'multinuc'},
+        {'name': 'contrast', 'type': 'multinuc'},
+        {'name': 'e-elaboration', 'type': 'rst'},
+        {'name': 'elaboration', 'type': 'rst'},
+        {'name': 'enablement', 'type': 'rst'},
+        {'name': 'evaluation-N', 'type': 'rst'},
+        {'name': 'evaluation-S', 'type': 'rst'},
+        {'name': 'evidence', 'type': 'rst'},
+        {'name': 'interpretation', 'type': 'rst'},
+        {'name': 'joint', 'type': 'multinuc'},
+        {'name': 'justify', 'type': 'rst'},
+        {'name': 'list', 'type': 'multinuc'},
+        {'name': 'motivation', 'type': 'rst'},
+        {'name': 'otherwise', 'type': 'rst'},
+        {'name': 'preparation', 'type': 'rst'},
+        {'name': 'purpose', 'type': 'rst'},
+        {'name': 'reason-N', 'type': 'rst'},
+        {'name': 'reason', 'type': 'rst'},
+        {'name': 'restatement', 'type': 'rst'},
+        {'name': 'result', 'type': 'rst'},
+        {'name': 'sameunit', 'type': 'multinuc'},
+        {'name': 'sequence', 'type': 'multinuc'},
+        {'name': 'solutionhood', 'type': 'rst'},
+        {'name': 'summary', 'type': 'rst'}
+    ]:
+        rel_tag = soup.new_tag("rel")
+        for k, v in rel.items():
+            rel_tag[k] = v
+        relations.append(rel_tag)
+
+    # TODO: populate body
+    # <body>
+	# 	<segment id="1" >Ministerium bestätigte Omikron-Fall in Österreich</segment>
+	# 	<segment id="2" parent="35" relname="span">Die Coronavirus-Variante Omikron ist offiziell in Österreich angekommen:</segment>
+    #     ...
+    #     <group id="23" type="span" parent="36" relname="span"/>
+    #     ...
+	# 	<group id="43" type="span" parent="23" relname="elaboration"/>
+	# 	<group id="44" type="span" />
+	# </body>
+
+    return str(soup.prettify())
 
 
 if __name__ == "__main__":
