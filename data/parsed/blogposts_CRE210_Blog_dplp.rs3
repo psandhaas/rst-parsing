@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8'?><rst>
+  <header>
+    <relations>
+      <rel name="Antithesis" type="rst"/>
+      <rel name="Background" type="rst"/>
+      <rel name="Cause" type="rst"/>
+      <rel name="Circumstance" type="rst"/>
+      <rel name="Concession" type="rst"/>
+      <rel name="Condition" type="rst"/>
+      <rel name="Conjunction" type="multinuc"/>
+      <rel name="Contrast" type="multinuc"/>
+      <rel name="Disjunction" type="multinuc"/>
+      <rel name="Elaboration" type="rst"/>
+      <rel name="Enablement" type="rst"/>
+      <rel name="Evaluation" type="rst"/>
+      <rel name="Evidence" type="rst"/>
+      <rel name="Interpretation" type="rst"/>
+      <rel name="Joint" type="multinuc"/>
+      <rel name="Justify" type="rst"/>
+      <rel name="Motivation" type="rst"/>
+      <rel name="Otherwise" type="rst"/>
+      <rel name="Preparation" type="rst"/>
+      <rel name="Purpose" type="rst"/>
+      <rel name="Restatement" type="rst"/>
+      <rel name="Result" type="rst"/>
+      <rel name="Sequence" type="multinuc"/>
+      <rel name="Solutionhood" type="rst"/>
+      <rel name="Summary" type="rst"/>
+      <rel name="background" type="rst"/>
+      <rel name="conjunction" type="multinuc"/>
+      <rel name="contrast" type="multinuc"/>
+      <rel name="elaboration" type="rst"/>
+      <rel name="list" type="multinuc"/>
+    </relations>
+  </header>
+  <body>
+    <segment id="7" parent="5" relname="conjunction">Kaum ein Beruf ist so nah an der Natur wie der des Jägers</segment>
+    <segment id="11" parent="9" relname="span">und die Jagd lässt sich bis in den evolutionären Ursprung des Homo sapiens zurückverfolgen .</segment>
+    <segment id="17" parent="15" relname="conjunction">Die Jagd hat dem Menschen erst die Entwicklung zum heutigen Menschen ermöglicht</segment>
+    <segment id="19" parent="15" relname="conjunction">und war und ist auch die Basis für den Aufbau und Betrieb der Landwirtschaft .</segment>
+    <segment id="21" parent="13" relname="list">Sie brachte auch die Evolution des Hundes und dessen Symbiose mit dem Menschen hervor .</segment>
+    <segment id="25" parent="23" relname="conjunction">Heute wird die Bedeutung der Jagd nur selten gesehen</segment>
+    <segment id="27" parent="23" relname="conjunction">und spielt sich jenseits der Öffentlichkeit ab .</segment>
+    <segment id="29" parent="1" relname="span">Ich spreche mit Jäger und Podcaster Jochen Schumacher über Geschichte , Ausbildung , Ausübung und Bedeutung der Jagd , über das schwierige Verhältnis der modernen Gesellschaft zum Jägertum und vor allem was man persönlich aus der intensiven Begegnung mit der Natur für sich und das Leben lernen kann .</segment>
+    <group id="1" type="span"/>
+    <group id="3" type="multinuc" parent="29" relname="background"/>
+    <group id="5" type="multinuc" parent="3" relname="contrast"/>
+    <group id="9" type="span" parent="5" relname="conjunction"/>
+    <group id="13" type="multinuc" parent="11" relname="elaboration"/>
+    <group id="15" type="multinuc" parent="13" relname="list"/>
+    <group id="23" type="multinuc" parent="3" relname="contrast"/>
+  </body>
+</rst>

@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='UTF-8'?><rst>
+  <header>
+    <relations>
+      <rel name="Antithesis" type="rst"/>
+      <rel name="Background" type="rst"/>
+      <rel name="Cause" type="rst"/>
+      <rel name="Circumstance" type="rst"/>
+      <rel name="Concession" type="rst"/>
+      <rel name="Condition" type="rst"/>
+      <rel name="Conjunction" type="multinuc"/>
+      <rel name="Contrast" type="multinuc"/>
+      <rel name="Disjunction" type="multinuc"/>
+      <rel name="Elaboration" type="rst"/>
+      <rel name="Enablement" type="rst"/>
+      <rel name="Evaluation" type="rst"/>
+      <rel name="Evidence" type="rst"/>
+      <rel name="Interpretation" type="rst"/>
+      <rel name="Joint" type="multinuc"/>
+      <rel name="Justify" type="rst"/>
+      <rel name="Motivation" type="rst"/>
+      <rel name="Otherwise" type="rst"/>
+      <rel name="Preparation" type="rst"/>
+      <rel name="Purpose" type="rst"/>
+      <rel name="Restatement" type="rst"/>
+      <rel name="Result" type="rst"/>
+      <rel name="Sequence" type="multinuc"/>
+      <rel name="Solutionhood" type="rst"/>
+      <rel name="Summary" type="rst"/>
+      <rel name="attribution" type="rst"/>
+      <rel name="background" type="rst"/>
+      <rel name="eelaboration" type="rst"/>
+      <rel name="elaboration" type="rst"/>
+      <rel name="list" type="multinuc"/>
+      <rel name="reason" type="rst"/>
+      <rel name="sameunit" type="multinuc"/>
+    </relations>
+  </header>
+  <body>
+    <segment id="9" parent="7" relname="list">Arbeitslosenzahlen rückläufig ,</segment>
+    <segment id="11" parent="7" relname="list">Kurzarbeit steigt</segment>
+    <segment id="15" parent="13" relname="list">Die Zahl der Arbeitslosen ist im Vergleich zur Vorwoche leicht gesunken .</segment>
+    <segment id="21" parent="19" relname="span">Derzeit sind 406.987 Personen beim AMS arbeitslos gemeldet oder in Schulung ,</segment>
+    <segment id="23" parent="21" relname="eelaboration">das sind um 3.520 Personen weniger als noch vor einer Woche .</segment>
+    <segment id="27" parent="25" relname="list">336.996 Personen sind auf Arbeitssuche ,</segment>
+    <segment id="29" parent="25" relname="list">69.991 nehmen an Schulungsmaßnahmen teil ,</segment>
+    <segment id="31" parent="3" relname="sameunit">geht aus aktuellen Zahlen des Arbeitsministeriums hervor .</segment>
+    <segment id="39" parent="37" relname="span">Ein Anstieg wurde bei den Anmeldungen zur Kurzarbeit verzeichnet ,</segment>
+    <segment id="41" parent="39" relname="eelaboration">diese kletterten von 114.961 auf 136.995 .</segment>
+    <segment id="43" parent="37" relname="elaboration">“ Trotz der für diese Zeit des Jahres üblichen saisonalen Effekte verzeichnen wir derzeit sinkende Arbeitslosenzahlen .</segment>
+    <segment id="49" parent="47" relname="span">Bemerkenswert ist , dass die Arbeitslosigkeit mit derzeit 406.987 arbeitslos gemeldeten Personen inklusive Teilnehmerinnen und Teilnehmern an AMS Schulungen um knapp 23.700 Personen unter dem Niveau der Vergleichswoche 2019 liegt ” ,</segment>
+    <segment id="51" parent="49" relname="attribution">erklärte Arbeitsminister Martin Kocher ( ÖVP ) am Dienstag laut Aussendung .</segment>
+    <segment id="57" parent="59" relname="attribution">Die rückläufigen Zahlen zeigen ,</segment>
+    <segment id="59" parent="55" relname="span">dass die Auswirkungen der Pandemie den Arbeitsmarkt nur mehr in gewissen Bereichen wie der Langzeitarbeitslosigkeit prägen , hieß es in der Aussendung .</segment>
+    <segment id="63" parent="61" relname="span">Positiv sei auch , dass sich die Jugendarbeitslosigkeit nach nationaler Definition auf niedrigerem Niveau als vor der Krise bewege .</segment>
+    <segment id="65" parent="63" relname="reason">Die Quote liegt derzeit bei 6,9 Prozent , 2019 waren es noch 7,6 Prozent .</segment>
+    <group id="1" type="span"/>
+    <group id="3" type="multinuc" parent="33" relname="background"/>
+    <group id="5" type="multinuc" parent="3" relname="sameunit"/>
+    <group id="7" type="multinuc" parent="5" relname="sameunit"/>
+    <group id="13" type="multinuc" parent="5" relname="sameunit"/>
+    <group id="17" type="multinuc" parent="13" relname="list"/>
+    <group id="19" type="span" parent="17" relname="list"/>
+    <group id="25" type="multinuc" parent="17" relname="list"/>
+    <group id="33" type="span" parent="1" relname="span"/>
+    <group id="35" type="span" parent="33" relname="span"/>
+    <group id="37" type="span" parent="35" relname="span"/>
+    <group id="45" type="multinuc" parent="35" relname="elaboration"/>
+    <group id="47" type="span" parent="45" relname="list"/>
+    <group id="53" type="multinuc" parent="45" relname="list"/>
+    <group id="55" type="span" parent="53" relname="list"/>
+    <group id="61" type="span" parent="53" relname="list"/>
+  </body>
+</rst>

@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8'?><rst>
+  <header>
+    <relations>
+      <rel name="Antithesis" type="rst"/>
+      <rel name="Background" type="rst"/>
+      <rel name="Cause" type="rst"/>
+      <rel name="Circumstance" type="rst"/>
+      <rel name="Concession" type="rst"/>
+      <rel name="Condition" type="rst"/>
+      <rel name="Conjunction" type="multinuc"/>
+      <rel name="Contrast" type="multinuc"/>
+      <rel name="Disjunction" type="multinuc"/>
+      <rel name="Elaboration" type="rst"/>
+      <rel name="Enablement" type="rst"/>
+      <rel name="Evaluation" type="rst"/>
+      <rel name="Evidence" type="rst"/>
+      <rel name="Interpretation" type="rst"/>
+      <rel name="Joint" type="multinuc"/>
+      <rel name="Justify" type="rst"/>
+      <rel name="Motivation" type="rst"/>
+      <rel name="Otherwise" type="rst"/>
+      <rel name="Preparation" type="rst"/>
+      <rel name="Purpose" type="rst"/>
+      <rel name="Restatement" type="rst"/>
+      <rel name="Result" type="rst"/>
+      <rel name="Sequence" type="multinuc"/>
+      <rel name="Solutionhood" type="rst"/>
+      <rel name="Summary" type="rst"/>
+      <rel name="contrast" type="multinuc"/>
+      <rel name="eelaboration" type="rst"/>
+      <rel name="elaboration" type="rst"/>
+      <rel name="interpretation" type="rst"/>
+      <rel name="list" type="multinuc"/>
+      <rel name="reason" type="rst"/>
+      <rel name="reasonn" type="rst"/>
+    </relations>
+  </header>
+  <body>
+    <segment id="5" parent="3" relname="span">Mann in England fuhr über 70 Jahre lang ohne Führerschein Auto Ein Mann ist in England nach eigenen Angaben mehr als 70 Jahre lang ohne Führerschein oder Versicherung Auto gefahren .</segment>
+    <segment id="9" parent="7" relname="list">Wie die Polizei mitteilte ,</segment>
+    <segment id="13" parent="11" relname="contrast">geriet der 1938 geborene Mann in der Nähe von Nottingham mit seinem Mini One in eine Routinekontrolle .</segment>
+    <segment id="17" parent="15" relname="span">Papiere konnte er nicht vorweisen .</segment>
+    <segment id="21" parent="19" relname="list">Er gab aber an , seit seinem zwölften Lebensjahr hinter dem Steuer zu sitzen , ohne je einen Führerschein oder eine Versicherung gehabt zu haben .</segment>
+    <segment id="27" parent="25" relname="span">" Irgendwie hat er es geschafft , nie von der Polizei angehalten zu werden " , hieß es weiter in dem Facebook - Post ,</segment>
+    <segment id="29" parent="27" relname="eelaboration">dessen Authentizität ein Polizeisprecher der Deutschen Presse - Agentur am Freitag bestätigte .</segment>
+    <segment id="33" parent="31" relname="list">Glücklicherweise sei der Mann auch nie in einen Unfall verwickelt gewesen ,</segment>
+    <segment id="35" parent="31" relname="list">so die Mitteilung weiter .</segment>
+    <segment id="39" parent="37" relname="span">Die Kontrolle soll bereits am Mittwoch stattgefunden haben .</segment>
+    <segment id="43" parent="41" relname="span">Die Polizei rief Autofahrer auf , sich nicht ohne gültige Papiere hinters Steuer zu setzen .</segment>
+    <segment id="45" parent="43" relname="reason">Die wachsende Zahl von Kameras mit automatischer Nummernschilderkennung mache es zunehmend wahrscheinlich , dass man dabei erwischt werde .</segment>
+    <group id="1" type="span"/>
+    <group id="3" type="span" parent="1" relname="span"/>
+    <group id="7" type="multinuc" parent="5" relname="elaboration"/>
+    <group id="11" type="multinuc" parent="7" relname="list"/>
+    <group id="15" type="span" parent="11" relname="contrast"/>
+    <group id="19" type="multinuc" parent="17" relname="reasonn"/>
+    <group id="23" type="multinuc" parent="19" relname="list"/>
+    <group id="25" type="span" parent="23" relname="list"/>
+    <group id="31" type="multinuc" parent="23" relname="list"/>
+    <group id="37" type="span" parent="3" relname="interpretation"/>
+    <group id="41" type="span" parent="39" relname="reason"/>
+  </body>
+</rst>

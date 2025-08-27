@@ -61,4 +61,16 @@ if __name__ == "__main__":
     from pprint import pprint
 
     texts = load_texts()
-    dmrst = DMRSTParser()
+    # dmrst = DMRSTParser()
+    # dplp = DPLPParser()
+    # dplp_rst_out_dir = "C:/Users/Philipp/Repos/DPLP-German"
+    res_dir = "C:/Users/Philipp/Repos/rst-parsing/data/parsed"
+    # for doc_name, sents in texts.items():
+    #     pprint((doc_res := dplp.parse("\n".join(sents))[0]), sort_dicts=False)
+    #     with open(f"{res_dir}/{doc_name}_dplp.rs3", "w", encoding="utf-8") as rs3_f:
+    #         rs3_f.write(
+    #             "<?xml version='1.0' encoding='UTF-8'?>"
+    #         )
+    #         rs3_f.write(doc_res["rs3"])
+    #     with open(f"{res_dir}/{doc_name}_dplp.dis", "w", encoding="utf-8") as dis_f:
+    #         dis_f.write(doc_res["dis"])

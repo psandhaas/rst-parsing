@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8'?><rst>
+  <header>
+    <relations>
+      <rel name="Antithesis" type="rst"/>
+      <rel name="Background" type="rst"/>
+      <rel name="Cause" type="rst"/>
+      <rel name="Circumstance" type="rst"/>
+      <rel name="Concession" type="rst"/>
+      <rel name="Condition" type="rst"/>
+      <rel name="Conjunction" type="multinuc"/>
+      <rel name="Contrast" type="multinuc"/>
+      <rel name="Disjunction" type="multinuc"/>
+      <rel name="Elaboration" type="rst"/>
+      <rel name="Enablement" type="rst"/>
+      <rel name="Evaluation" type="rst"/>
+      <rel name="Evidence" type="rst"/>
+      <rel name="Interpretation" type="rst"/>
+      <rel name="Joint" type="multinuc"/>
+      <rel name="Justify" type="rst"/>
+      <rel name="Motivation" type="rst"/>
+      <rel name="Otherwise" type="rst"/>
+      <rel name="Preparation" type="rst"/>
+      <rel name="Purpose" type="rst"/>
+      <rel name="Restatement" type="rst"/>
+      <rel name="Result" type="rst"/>
+      <rel name="Sequence" type="multinuc"/>
+      <rel name="Solutionhood" type="rst"/>
+      <rel name="Summary" type="rst"/>
+      <rel name="background" type="rst"/>
+      <rel name="eelaboration" type="rst"/>
+      <rel name="elaboration" type="rst"/>
+      <rel name="evaluations" type="rst"/>
+      <rel name="evidence" type="rst"/>
+      <rel name="interpretation" type="rst"/>
+      <rel name="list" type="multinuc"/>
+      <rel name="preparation" type="rst"/>
+      <rel name="reason" type="rst"/>
+      <rel name="reasonn" type="rst"/>
+    </relations>
+  </header>
+  <body>
+    <segment id="5" parent="3" relname="span">CHRISTIAN BETTELS Natürliche Rückeroberung Der Naturpark , der zwischen Jüterbog , Luckenwalde und Treuenbrietzen entsteht , ist außerhalb der Region noch viel zu wenig bekannt .</segment>
+    <segment id="9" parent="7" relname="span">Deshalb ist es zu begrüßen , dass Manfred Stolpe dem weiträumigen Areal vorgestern einen Besuch abstattete .</segment>
+    <segment id="11" parent="9" relname="reason">Ein beabsichtigter Effekt solcher Dienstreisen des Ministerpräsidenten in die Provinz ist es , möglichst viel öffentliche Aufmerksamkeit auf bestimmte Vorhaben zu lenken .</segment>
+    <segment id="15" parent="13" relname="span">Um den etwa 7000 Hektar großen Naturpark soll ein Rundweg angelegt werden .</segment>
+    <segment id="21" parent="19" relname="span">Das wäre ein bedeutender Schritt zum erklärten Ziel , den ehemaligen Truppenübungsplatz touristisch zu erschließen .</segment>
+    <segment id="25" parent="23" relname="span">Die Wanderdüne bei Forst Zinna ist schon jetzt ein bei Auswärtigen und Einheimischen gleichermaßen beliebtes Ausflugsziel .</segment>
+    <segment id="29" parent="27" relname="span">Diese Art der Konversion - die Natur erobert frühere Militärflächen zurück -</segment>
+    <segment id="33" parent="31" relname="span">ist vergleichsweise billig .</segment>
+    <segment id="35" parent="33" relname="eelaboration">Die Abschnitte , auf denen möglicherweise weiterhin gefährliche Munition lagert , bleiben allerdings Sperrgebiet .</segment>
+    <segment id="41" parent="39" relname="span">Ob bei der touristischen Erschließung der Konversionsflächen auf lange Sicht neue Arbeitsplätze entstehen , hängt vor allem davon ab ,</segment>
+    <segment id="43" parent="41" relname="eelaboration">wie viele Neugierige kommen werden .</segment>
+    <segment id="47" parent="49" relname="preparation">Wie gesagt :</segment>
+    <segment id="49" parent="45" relname="span">Stolpe war schon da.</segment>
+    <group id="1" type="span"/>
+    <group id="3" type="span" parent="13" relname="background"/>
+    <group id="7" type="span" parent="5" relname="reasonn"/>
+    <group id="13" type="span" parent="1" relname="span"/>
+    <group id="17" type="multinuc" parent="15" relname="interpretation"/>
+    <group id="19" type="span" parent="17" relname="list"/>
+    <group id="23" type="span" parent="21" relname="evidence"/>
+    <group id="27" type="span" parent="25" relname="eelaboration"/>
+    <group id="31" type="span" parent="29" relname="evaluations"/>
+    <group id="37" type="span" parent="17" relname="list"/>
+    <group id="39" type="span" parent="37" relname="span"/>
+    <group id="45" type="span" parent="39" relname="elaboration"/>
+  </body>
+</rst>
