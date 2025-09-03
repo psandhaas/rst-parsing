@@ -1,11 +1,12 @@
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, SoupStrainer
 import docker
 import json
+from glob import glob
 import os
 from pathlib import Path
 import subprocess
 import time
-from typing import Literal, Union
+from typing import Literal, Optional
 
 
 def ensure_docker_desktop_running(
@@ -218,6 +219,259 @@ def make_rs3() -> str:
 	# </body>
 
     return str(soup.prettify())
+
+
+def get_relations_set(rs3: str, lower: bool = True) -> set[tuple[str, str]]:
+    rels = set()
+    soup = BeautifulSoup(rs3, "xml", parse_only=SoupStrainer("rel"))
+    for rel in soup.find_all(True):
+        if lower:
+            rels.add(tuple([a.lower() for a in rel.attrs.values()]))
+        else:
+            rels.add(tuple(rel.attrs.values()))
+    return rels
+
+
+def map_fine2coarse(relation: str) -> Optional[str]:
+    """Maps a fine-grained relation label (either from DPLP or DMRST) to
+    a coarse-grained one that's compatible ."""
+    # mapping of cross-lingual RST-relations following Braud et al., 2017
+    # (https://doi.org/10.48550/arXiv.1701.02946) and Carlson et al., 2001
+    general_mapping = {
+        # taken from github.com/seq-to-mind/DMRST_Parser/blob/main/Preprocess_RST_Data/1_uniform_treebanks/code/src/relationSet.py#L11
+        u'ahalbideratzea':'Enablement',
+        u'alderantzizko-baldintza':'Condition',
+        u'alternativa':'Condition',
+        u'analogy':'Comparison',
+        u'antitesia':'Contrast',
+        u'antithesis':'Contrast',
+        u'antítesis':'Contrast',
+        u'arazo-soluzioa':'Topic-Comment',
+        u'attribution':'Attribution',
+        u'attribution-negative':'Attribution',
+        u'aukera':'Condition',
+        u'background':'Background',
+        u'baldintza':'Condition',
+        u'bateratzea':'Joint',
+        u'birformulazioa':'Summary',
+        u'capacitación':'Enablement',
+        u'causa':'Cause',
+        u'cause':'Cause',
+        u'cause-result':'Cause',
+        u'circumstance':'Background',
+        u'circunstancia':'Background',
+        u'comment':'Evaluation',
+        u'comment-topic':'Topic-Comment',
+        u'comparison':'Comparison',
+        u'concesión':'Contrast',
+        u'concession':'Contrast',
+        u'conclusion':'Evaluation',
+        u'condición':'Condition',
+        u'condición-inversa':'Condition',
+        u'condition':'Condition',
+        u'conjunción':'Joint',
+        u'conjunction':'Joint',
+        u'consequence':'Cause',
+        u'contingency':'Condition',
+        u'contrast':'Contrast',
+        u'contraste':'Contrast',
+        u'definition':'Elaboration',
+        u'definitu-gabeko-erlazioa':'Summary',
+        u'disjunction':'Joint',
+        u'disjuntzioa':'Joint',
+        u'disyunción':'Joint',
+        u'e-elaboration':'Elaboration',
+        u'ebaluazioa':'Evaluation',
+        u'ebidentzia':'Explanation',
+        u'elaboración':'Elaboration',
+        u'elaboration':'Elaboration',
+        u'elaboration-additional':'Elaboration',
+        u'elaboration-general-specific':'Elaboration',
+        u'elaboration-object-attribute':'Elaboration',
+        u'elaboration-part-whole':'Elaboration',
+        u'elaboration-process-step':'Elaboration',
+        u'elaboration-set-member':'Elaboration',
+        u'elaborazioa':'Elaboration',
+        u'enablement':'Enablement',
+        u'evaluación':'Evaluation',
+        u'evaluation':'Evaluation',
+        u'evidence':'Explanation',
+        u'evidencia':'Explanation',
+        u'example':'Elaboration',
+        u'explanation':'Explanation',
+        u'explanation-argumentative':'Explanation',
+        u'ez-baldintzatzailea':'Condition',
+        u'fondo':'Background',
+        u'helburua':'Enablement',
+        u'hypothetical':'Condition',
+        u'interpretación':'Evaluation',
+        u'interpretation':'Evaluation',
+        u'interpretazioa':'Evaluation',
+        u'inverted-sequence':'Temporal',
+        u'joint':'Joint',
+        u'justificación':'Explanation',
+        u'justifikazioa':'Explanation',
+        u'justify':'Explanation',
+        u'kausa':'Cause',
+        u'konjuntzioa':'Joint',
+        u'kontrastea':'Contrast',
+        u'kontzesioa':'Contrast',
+        u'laburpena':'Summary',
+        u'list':'Joint',
+        u'lista':'Joint',
+        u'manner':'Manner-Means',
+        u'means':'Manner-Means',
+        u'medio':'Manner-Means',
+        u'metodoa':'Manner-Means',
+        u'motibazioa':'Explanation',
+        u'motivación':'Explanation',
+        u'motivation':'Explanation',
+        u'non-volitional-cause':'Cause',
+        u'non-volitional-result':'Cause',
+        u'nonvolitional-cause':'Cause',
+        u'nonvolitional-result':'Cause',
+        u'ondorioa':'Cause',
+        u'otherwise':'Condition',
+        u'parenthetical':'Elaboration',
+        u'preference':'Comparison',
+        u'preparación':'Background',
+        u'preparation':'Background',
+        u'prestatzea':'Background',
+        u'problem-solution':'Topic-Comment',
+        u'proportion':'Comparison',
+        u'propósito':'Enablement',
+        u'purpose':'Enablement',
+        u'question-answer':'Topic-Comment',
+        u'reason':'Explanation',
+        u'reformulación':'Summary',
+        u'restatement':'Summary',
+        u'restatement-mn':'Summary',
+        u'result':'Cause',
+        u'resultado':'Cause',
+        u'resumen':'Summary',
+        u'rhetorical-question':'Topic-Comment',
+        u'same-unit':'Same-unit',
+        u'sameunit':'Same-unit',  # added
+        u'secuencia':'Temporal',
+        u'sekuentzia':'Temporal',
+        u'sequence':'Temporal',
+        u'solución':'Topic-Comment',
+        u'solutionhood':'Topic-Comment',
+        u'statement-response':'Topic-Comment',
+        u'summary':'Summary',
+        u'temporal-after':'Temporal',
+        u'temporal-before':'Temporal',
+        u'temporal-same-time':'Temporal',
+        u'testuingurua':'Background',
+        u'textual-organization':'Textual-organization',
+        u'textualorganization':'Textual-organization',
+        u'topic-comment':'Topic-Comment',
+        u'topic-drift':'Topic-Change',
+        u'topic-shift':'Topic-Change',
+        u'unconditional':'Condition',
+        u'unión':'Joint',
+        u'unless':'Condition',
+        u'volitional-cause':'Cause',
+        u'volitional-result':'Cause',
+        u'zirkunstantzia':'Background',
+        u'question': 'Topic-Comment'
+    }
+    other2joty = {
+        # taken from github.com/mohamadi-sara20/DPLP-German/blob/master/parsing_eval_metrics/RelationClasses.txt
+        'attribution': 'Attribution',
+        'background': 'Background',
+        'cause': 'Cause',
+        'causemult': 'Cause',
+        'comparison': 'Comparison',
+        'comparisonmult': 'Comparison',
+        'condition': 'Condition',
+        'conditionmult': 'Condition',
+        'contrast': 'Contrast',
+        'contrastmult': 'Contrast',
+        'dummy': 'Dummy',
+        'elaboration': 'Elaboration',
+        'enablement': 'Enablement',
+        'evaluation': 'Evaluation',
+        'evaluationmult': 'Evaluation',
+        'explanation': 'Explanation',
+        'explanationmult': 'Explanation',
+        'jointmult': 'Joint',
+        'manner-means': 'Manner-Means',
+        'same': 'Same-Unit',
+        'span': 'span',
+        'summary': 'Summary',
+        'temporal': 'Temporal',
+        'temporalmult': 'Temporal',
+        'textualorganization': 'TextualOrganization',
+        'topichange': 'Topic-Change',
+        'topichangemult': 'Topic-Change',
+        'topicomment': 'Topic-Comment',
+        'topicommentmult': 'Topic-Comment',
+        'topidriftmult': 'Topic-Change',
+        'virtual': 'Dummy',
+        'virtual-root': 'Dummy'
+    }
+    dmrst2joty = {
+        "same-unit": "Same-Unit",
+        "Same-unit": "Same-Unit",
+        "textual-organization": "TextualOrganization",
+        "Textual-organization": "TextualOrganization"
+        # Rest are identical:
+            # 'Attribution',
+            # 'Background',
+            # 'Cause',
+            # 'Comparison',
+            # 'Condition',
+            # 'Contrast',
+            # 'Elaboration',
+            # 'Enablement',
+            # 'Evaluation',
+            # 'Explanation',
+            # 'Joint',
+            # 'Manner-Means',
+            # 'Summary',
+            # 'Temporal',
+            # 'Topic-Change',
+            # 'Topic-Comment'
+    }
+
+    if (rel := relation) is None:
+        return None
+    
+    if rel in general_mapping:
+        coarse_dmrst = general_mapping[rel]
+    elif (rel := relation.lower()) not in general_mapping:
+        # try to strip nuclearity suffixes
+        if "-" in rel and len(
+            splt := [x.strip() for x in rel.split("-") if len(x.strip()) > 0]
+        ) == 2 and splt[-1] in ["s", "n", "mn"]:
+            if splt[0] in general_mapping:
+                coarse_dmrst = general_mapping[splt[0]]
+
+    if coarse_dmrst in dmrst2joty:
+        coarse_label = dmrst2joty[coarse_dmrst]
+    elif rel in other2joty:
+        coarse_label = other2joty[rel]
+    else:
+        coarse_label = "unknown"
+    return coarse_label
+
+
+def build_relations_map(
+    annotations_dir: str
+) -> dict[str, dict[str, list[str] | str]]:
+    """Builds a mapping of all unique relations found across all .rs3 files in
+    the given directory, where fine-grained relations are mapped to
+    coarse-grained ones."""
+    relations_set = set()
+    for p in glob(f"{annotations_dir}/*.rs3"):
+        with open(p, "r", encoding="utf-8") as f:
+            rs3 = f.read()
+        relations_set.update(get_relations_set(rs3))
+
+    return {rel[0]: {"aliases": [],
+                     "type": rel[1]}
+            for rel in relations_set}
 
 
 if __name__ == "__main__":
