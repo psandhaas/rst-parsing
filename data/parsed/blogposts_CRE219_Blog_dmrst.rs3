@@ -1,0 +1,54 @@
+<rst>
+ <header>
+  <relations>
+   <rel name="Background" type="rst"/>
+   <rel name="Elaboration" type="rst"/>
+   <rel name="Joint" type="multinuc"/>
+   <rel name="Joint" type="rst"/>
+   <rel name="Temporal" type="multinuc"/>
+   <rel name="Temporal" type="rst"/>
+   <rel name="span" type="rst"/>
+  </relations>
+ </header>
+ <body>
+  <segment id="10" parent="0" relname="span">
+   Wir sprechen über Freiräume , das Techno- und das Sicherheitsgefühl , Musik und DJs , Essen und Trinken und über Motivation und Verantwortung zwischen Veranstaltern , Mitstreitern und Gästen .
+  </segment>
+  <segment id="1" parent="11" relname="Temporal">
+   Anfang der 90er Jahre veränderte die Maueröffnung gemeinsam mit der Ravekultur die gesellschaftliche Landschaft in Deutschland schlagartig .
+  </segment>
+  <segment id="2" parent="15" relname="span">
+   Auf die depressiven 80er folgte eine Generation von feierwütigen aber auch überaus kreativen Jugendlichen ,
+  </segment>
+  <segment id="3" parent="15" relname="Elaboration">
+   die sich ihre neu gewonnenen Freiräume auf großartigste ausschmückten .
+  </segment>
+  <segment id="4" parent="16" relname="Background">
+   Begleitet von einem neuen Sound und Lebensgefühl
+  </segment>
+  <segment id="5" parent="17" relname="span">
+   entstand eine neue Dimension von Partys
+  </segment>
+  <segment id="6" parent="17" relname="Elaboration">
+   in der viele Zuflucht von einer andererseits komplexen und überfordernden Welt fanden .
+  </segment>
+  <segment id="7" parent="14" relname="Joint">
+   Marc-André Janizewski ist einer der Gestalter dieser Generation , der gemeinsam mit seinem Kollegen Markus das Partykollektiv Pyonen begründete
+  </segment>
+  <segment id="8" parent="18" relname="Joint">
+   und mit der Nation of Gondwana eine der ältesten Partytraditionen der Technozeit in Deutschland etablierten
+  </segment>
+  <segment id="9" parent="18" relname="Joint">
+   und gemeinsam mit dem Chaos Computer Club das Chaos Communication Camp ermöglicht haben .
+  </segment>
+  <group id="0" type="span"/>
+  <group id="11" parent="0" relname="Background" type="span"/>
+  <group id="12" parent="11" relname="Temporal" type="multinuc"/>
+  <group id="13" parent="12" relname="Joint" type="multinuc"/>
+  <group id="14" parent="12" relname="Joint" type="multinuc"/>
+  <group id="15" parent="13" relname="Temporal" type="multinuc"/>
+  <group id="16" parent="13" relname="Temporal" type="multinuc"/>
+  <group id="17" parent="16" relname="span" type="span"/>
+  <group id="18" parent="14" relname="Joint" type="multinuc"/>
+ </body>
+</rst>

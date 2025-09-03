@@ -1,0 +1,71 @@
+<rst>
+ <header>
+  <relations>
+   <rel name="Background" type="rst"/>
+   <rel name="Condition" type="rst"/>
+   <rel name="Evaluation" type="rst"/>
+   <rel name="Joint" type="multinuc"/>
+   <rel name="Joint" type="rst"/>
+   <rel name="Temporal" type="multinuc"/>
+   <rel name="Temporal" type="rst"/>
+   <rel name="span" type="rst"/>
+  </relations>
+ </header>
+ <body>
+  <segment id="1" parent="17" relname="Background">
+   DETLEF BRAUNE
+  </segment>
+  <segment id="2" parent="19" relname="Joint">
+   Fürchtet euch nicht!
+  </segment>
+  <segment id="3" parent="19" relname="Joint">
+   Die einstige Fußball-Weltmacht zittert vor einem Winzling.
+  </segment>
+  <segment id="4" parent="18" relname="Temporal">
+   Mit seinem Tor zum 1:0 für die Ukraine stürzte der 1,62 Meter große Gennadi Subow die deutsche Nationalelf vorübergehend in ein Trauma.
+  </segment>
+  <segment id="5" parent="20" relname="Temporal">
+   Nachdem den tapfer kämpfenden Gästen der Ausgleich gelungen war,
+  </segment>
+  <segment id="6" parent="20" relname="Temporal">
+   wechselte der wie eine Mumie auf der Bank sitzende ukrainische Coach noch zwei ähnliche Leichtgewichte ein.
+  </segment>
+  <segment id="7" parent="16" relname="Joint">
+   Was soll das erst morgen Abend im zweiten Spiel werden?
+  </segment>
+  <segment id="8" parent="24" relname="Condition">
+   Wenn die drei Knirpse von Anbeginn wirbeln,
+  </segment>
+  <segment id="9" parent="24" relname="span">
+   könnte der um Ehre und Reputation kämpfenden Mannschaft von Rudi Völler der Weg zur Weltmeisterschaft endgültig verbaut sein.
+  </segment>
+  <segment id="10" parent="25" relname="Joint">
+   Je kleiner die Kicker daherkommen,
+  </segment>
+  <segment id="11" parent="25" relname="Joint">
+   desto größer wird der Gegner geredet.
+  </segment>
+  <segment id="14" parent="23" relname="Evaluation">
+   Fürchtet euch nicht!
+  </segment>
+  <segment id="12" parent="26" relname="Joint">
+   Die Fußball-Kleinmacht vom Dnepr steht kurz davor, das scheinbar mit einem Dauerabonnement für die WM ausgestattete Team in der schwarz-weißen Kluft und eine ganze Nation in das Tal der Tränen zu treiben.
+  </segment>
+  <segment id="13" parent="26" relname="Joint">
+   Dabei haben die deutschen Nationalkicker einen "Rudi Riese" auf der Bank und einen Franz Beckenbauer mit heißem Draht zum Fußballgott.
+  </segment>
+  <group id="0" type="span"/>
+  <group id="15" parent="0" relname="Background" type="span"/>
+  <group id="16" parent="0" relname="span" type="span"/>
+  <group id="17" parent="15" relname="Background" type="span"/>
+  <group id="18" parent="15" relname="span" type="span"/>
+  <group id="19" parent="17" relname="span" type="span"/>
+  <group id="20" parent="18" relname="Temporal" type="multinuc"/>
+  <group id="21" parent="16" relname="Joint" type="multinuc"/>
+  <group id="22" parent="21" relname="Joint" type="multinuc"/>
+  <group id="23" parent="21" relname="Joint" type="multinuc"/>
+  <group id="24" parent="22" relname="Joint" type="multinuc"/>
+  <group id="25" parent="22" relname="Joint" type="multinuc"/>
+  <group id="26" parent="23" relname="span" type="span"/>
+ </body>
+</rst>
