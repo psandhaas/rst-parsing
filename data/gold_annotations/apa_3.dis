@@ -1,5 +1,5 @@
 ( Root (span 2 17) 
-  ( Nucleus (leaf 1) (rel2par ) (text _!Arbeitslosenzahlen rückläufig, Kurzarbeit steigt_!) )
+  ( Nucleus (leaf 1) (rel2par span) (text _!Arbeitslosenzahlen rückläufig, Kurzarbeit steigt_!) )
   ( Nucleus (span 2 9) (rel2par span)
     ( Nucleus (span 2 9) (rel2par span)
       ( Nucleus (span 2 7) (rel2par contrast)

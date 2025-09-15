@@ -46,6 +46,6 @@
         ( Satellite (leaf 17) (rel2par motivation) (text _!Die wachsende Zahl von Kameras mit automatischer Nummernschilderkennung mache es zunehmend wahrscheinlich, dass man dabei erwischt werde._!) )
       )
     )
-    ( Nucleus (leaf 1) (rel2par ) (text _!Mann in England fuhr über 70 Jahre lang ohne Führerschein Auto_!) )
+    ( Nucleus (leaf 1) (rel2par span) (text _!Mann in England fuhr über 70 Jahre lang ohne Führerschein Auto_!) )
   )
 )

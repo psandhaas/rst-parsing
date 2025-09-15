@@ -1,5 +1,5 @@
 ( Root (span 2 14) 
-  ( Nucleus (leaf 1) (rel2par ) (text _!Natürliche Rückeroberung_!) )
+  ( Nucleus (leaf 1) (rel2par span) (text _!Natürliche Rückeroberung_!) )
   ( Nucleus (span 2 14) (rel2par span)
     ( Nucleus (span 2 11) (rel2par background)
       ( Nucleus (leaf 2) (rel2par span) (text _!  Deshalb ist es zu begrüßen , dass Manfred Stolpe dem weiträumigen Areal vorgestern einen Besuch abstattete ._!) )

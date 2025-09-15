@@ -1,5 +1,5 @@
 ( Root (span 2 22) 
-  ( Nucleus (leaf 1) (rel2par ) (text _!Ministerium bestätigte Omikron-Fall in Österreich_!) )
+  ( Nucleus (leaf 1) (rel2par span) (text _!Ministerium bestätigte Omikron-Fall in Österreich_!) )
   ( Nucleus (span 2 17) (rel2par span)
     ( Nucleus (leaf 2) (rel2par span) (text _!Die Coronavirus-Variante Omikron ist offiziell in Österreich angekommen:_!) )
     ( Satellite (span 3 17) (rel2par evidence)

@@ -1,0 +1,18 @@
+Attribution: attribution
+Background: preparation, background, circumstance
+Cause: cause, result
+Comparison: comparison
+Condition: unless, condition, unconditional, otherwise
+Contrast: concession, antithesis, contrast
+Elaboration: elaboration, e-elaboration
+Enablement: enablement, purpose
+Evaluation: evaluation-s, evaluation-n, evaluation, interpretation
+Explanation: reason-n, evidence, justify, explanation, motivation, reason
+Joint: disjunction, list, joint, conjunction
+Manner-Means: means
+Same-Unit: sameunit, same-unit
+Summary: restatement-mn, summary, restatement
+Temporal: sequence, temporal
+Topic-Comment: solutionhood, question
+Span: span
+unknown: evaluations, , eelaboration, reasonn, unstated-relation

@@ -1,0 +1,66 @@
+{
+    "Enablement": [
+        "enablement",
+        "purpose"
+    ],
+    "Summary": [
+        "restatement-mn",
+        "summary",
+        "restatement"
+    ],
+    "unknown": [
+        "evaluations",
+        "",
+        "eelaboration",
+        "reasonn",
+        "unstated-relation"
+    ],
+    "Topic-Comment": [
+        "solutionhood",
+        "question"
+    ],
+    "Contrast": [
+        "concession",
+        "antithesis",
+        "contrast"
+    ],
+    "Cause": [
+        "cause",
+        "result"
+    ],
+    "Background": [
+        "preparation",
+        "background",
+        "circumstance"
+    ],
+    "Condition": [
+        "unless",
+        "condition",
+        "unconditional",
+        "otherwise"
+    ],
+    "Elaboration": [
+        "elaboration",
+        "e-elaboration"
+    ],
+    "Explanation": [
+        "reason-n",
+        "evidence",
+        "justify",
+        "explanation",
+        "motivation",
+        "reason"
+    ],
+    "Manner-Means": [
+        "means"
+    ],
+    "Attribution": [
+        "attribution"
+    ],
+    "Evaluation": [
+        "evaluation-s",
+        "evaluation-n",
+        "evaluation",
+        "interpretation"
+    ]
+}

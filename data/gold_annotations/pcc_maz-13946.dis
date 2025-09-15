@@ -1,5 +1,5 @@
 ( Root (span 2 12) 
-  ( Nucleus (leaf 1) (rel2par ) (text _!Notsignale_!) )
+  ( Nucleus (leaf 1) (rel2par span) (text _!Notsignale_!) )
   ( Nucleus (span 2 12) (rel2par span)
     ( Nucleus (span 2 11) (rel2par span)
       ( Nucleus (leaf 2) (rel2par span) (text _!Eine erste Bestandsaufnahme der Situation in der Mittelstadt brachte nun ein überraschend negatives Bild ._!) )

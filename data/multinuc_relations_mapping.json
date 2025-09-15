@@ -1,0 +1,19 @@
+{
+    "Same-Unit": [
+        "sameunit",
+        "same-unit"
+    ],
+    "Comparison": [
+        "comparison"
+    ],
+    "Temporal": [
+        "sequence",
+        "temporal"
+    ],
+    "Joint": [
+        "disjunction",
+        "list",
+        "joint",
+        "conjunction"
+    ]
+}
