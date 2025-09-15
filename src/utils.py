@@ -1,12 +1,26 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# ========================================================================== #
+# Author:  Philipp Sandhaas                                                  #
+# GitHub:  github.com/psandhaas                                              #
+# Created: Mon, 14.09.25                                                     #
+# ========================================================================== #
+
+"""Utilities for RST parsing using dockerized parsers."""
+
 from bs4 import BeautifulSoup, SoupStrainer
 import docker
+from IPython import get_ipython
 import json
 from glob import glob
 import os
 from pathlib import Path
+import requests
 import subprocess
 import time
-from typing import Literal, Optional
+from typing import Dict, List, Literal, Optional, Union
+
+from rst2dis import rst2dis
 
 
 def ensure_docker_desktop_running(
@@ -73,6 +87,7 @@ def run_docker_container(image_name: Literal["dmrst", "dplp"]) -> str:
             ports=ports,
             detach=True
         )
+        _wait_for_service("http://localhost:8000/docs")
         return container.name
     elif image_name == "dplp":
         image = f"mohamadisara20/{image_name}-env:ger"
@@ -92,6 +107,20 @@ def run_docker_container(image_name: Literal["dmrst", "dplp"]) -> str:
         raise ValueError(
             "Invalid image name. Must be one of: 'dmrst', 'dplp'."
         )
+
+
+def _wait_for_service(url, timeout=60):
+    start = time.time()
+    while True:
+        try:
+            resp = requests.post(url, json={"texts": [""], "batch_size": 1})
+            if resp.status_code == 200:
+                break
+        except Exception:
+            pass
+        if time.time() - start > timeout:
+            raise RuntimeError(f"Service at {url} did not become responsive in time.")
+        time.sleep(1)
 
 
 def stop_and_rm_container(container_name: str) -> None:
@@ -163,64 +192,6 @@ def load_gold_annotations() -> dict[str, str]:
     return annotations
 
 
-def make_rs3() -> str:
-    soup = BeautifulSoup(features="xml")
-    soup.append(soup.new_tag("rst"))
-    soup.rst.extend([soup.new_tag("header"), soup.new_tag("body")])
-
-    relations = soup.header.append(soup.new_tag("relations"))
-    for rel in [
-        {'name': 'antithesis', 'type': 'rst'},
-        {'name': 'attribution', 'type': 'rst'},
-        {'name': 'background', 'type': 'rst'},
-        {'name': 'cause', 'type': 'rst'},
-        {'name': 'circumstance', 'type': 'rst'},
-        {'name': 'concession', 'type': 'rst'},
-        {'name': 'condition', 'type': 'rst'},
-        {'name': 'conjunction', 'type': 'multinuc'},
-        {'name': 'contrast', 'type': 'multinuc'},
-        {'name': 'e-elaboration', 'type': 'rst'},
-        {'name': 'elaboration', 'type': 'rst'},
-        {'name': 'enablement', 'type': 'rst'},
-        {'name': 'evaluation-N', 'type': 'rst'},
-        {'name': 'evaluation-S', 'type': 'rst'},
-        {'name': 'evidence', 'type': 'rst'},
-        {'name': 'interpretation', 'type': 'rst'},
-        {'name': 'joint', 'type': 'multinuc'},
-        {'name': 'justify', 'type': 'rst'},
-        {'name': 'list', 'type': 'multinuc'},
-        {'name': 'motivation', 'type': 'rst'},
-        {'name': 'otherwise', 'type': 'rst'},
-        {'name': 'preparation', 'type': 'rst'},
-        {'name': 'purpose', 'type': 'rst'},
-        {'name': 'reason-N', 'type': 'rst'},
-        {'name': 'reason', 'type': 'rst'},
-        {'name': 'restatement', 'type': 'rst'},
-        {'name': 'result', 'type': 'rst'},
-        {'name': 'sameunit', 'type': 'multinuc'},
-        {'name': 'sequence', 'type': 'multinuc'},
-        {'name': 'solutionhood', 'type': 'rst'},
-        {'name': 'summary', 'type': 'rst'}
-    ]:
-        rel_tag = soup.new_tag("rel")
-        for k, v in rel.items():
-            rel_tag[k] = v
-        relations.append(rel_tag)
-
-    # TODO: populate body
-    # <body>
-	# 	<segment id="1" >Ministerium bestätigte Omikron-Fall in Österreich</segment>
-	# 	<segment id="2" parent="35" relname="span">Die Coronavirus-Variante Omikron ist offiziell in Österreich angekommen:</segment>
-    #     ...
-    #     <group id="23" type="span" parent="36" relname="span"/>
-    #     ...
-	# 	<group id="43" type="span" parent="23" relname="elaboration"/>
-	# 	<group id="44" type="span" />
-	# </body>
-
-    return str(soup.prettify())
-
-
 def get_relations_set(rs3: str, lower: bool = True) -> set[tuple[str, str]]:
     rels = set()
     soup = BeautifulSoup(rs3, "xml", parse_only=SoupStrainer("rel"))
@@ -232,9 +203,14 @@ def get_relations_set(rs3: str, lower: bool = True) -> set[tuple[str, str]]:
     return rels
 
 
-def map_fine2coarse(relation: str) -> Optional[str]:
+def map_fine2coarse(relation: str, replace_unknown: bool = True) -> Optional[str]:
     """Maps a fine-grained relation label (either from DPLP or DMRST) to
-    a coarse-grained one that's compatible ."""
+    a coarse-grained one that's compatible with the evaluation script by
+    Joty, 2011 (https://github.com/mohamadi-sara20/DPLP-German/tree/master/parsing_eval_metrics).
+    """
+    if relation is None:
+        return None
+
     # mapping of cross-lingual RST-relations following Braud et al., 2017
     # (https://doi.org/10.48550/arXiv.1701.02946) and Carlson et al., 2001
     general_mapping = {
@@ -411,11 +387,13 @@ def map_fine2coarse(relation: str) -> Optional[str]:
         'virtual': 'Dummy',
         'virtual-root': 'Dummy'
     }
-    dmrst2joty = {
+    all2joty = {
         "same-unit": "Same-Unit",
         "Same-unit": "Same-Unit",
+        "Same-unit": "Same-Unit",
         "textual-organization": "TextualOrganization",
-        "Textual-organization": "TextualOrganization"
+        "Textual-organization": "TextualOrganization",
+        "Textual-Organization": "TextualOrganization"
         # Rest are identical:
             # 'Attribution',
             # 'Background',
@@ -434,31 +412,47 @@ def map_fine2coarse(relation: str) -> Optional[str]:
             # 'Topic-Change',
             # 'Topic-Comment'
     }
+    all2joty |= other2joty
 
-    if (rel := relation) is None:
-        return None
-    
-    if rel in general_mapping:
-        coarse_dmrst = general_mapping[rel]
-    elif (rel := relation.lower()) not in general_mapping:
-        # try to strip nuclearity suffixes
-        if "-" in rel and len(
-            splt := [x.strip() for x in rel.split("-") if len(x.strip()) > 0]
-        ) == 2 and splt[-1] in ["s", "n", "mn"]:
-            if splt[0] in general_mapping:
-                coarse_dmrst = general_mapping[splt[0]]
+    def try_strip_suffix(relation: str) -> str:
+        if "-" in relation and len(  # try to strip nuclearity suffixes
+                splt := [x.strip() for x in relation.split("-") if len(x.strip()) > 0]
+            ) == 2 and splt[-1] in ["s", "n", "mn"]:
+                return splt[0]
+        return relation
 
-    if coarse_dmrst in dmrst2joty:
-        coarse_label = dmrst2joty[coarse_dmrst]
-    elif rel in other2joty:
-        coarse_label = other2joty[rel]
-    else:
-        coarse_label = "unknown"
-    return coarse_label
+    def map_to_general(relation: str) -> str:
+        if relation in general_mapping:
+            return general_mapping[relation]
+        elif relation.lower() in general_mapping:
+            return general_mapping[relation.lower()]
+        elif (stripped := try_strip_suffix(relation)) in general_mapping:
+            return general_mapping[stripped]
+        elif (stripped.lower()) in general_mapping:
+            return general_mapping[stripped.lower()]
+        return relation
+
+    def map_to_joty(relation: str) -> str:
+        if relation in all2joty:
+            return all2joty[relation]
+        elif relation.lower() in all2joty:
+            return all2joty[relation.lower()]
+        elif (stripped := try_strip_suffix(relation)) in all2joty:
+            return all2joty[stripped]
+        elif (stripped.lower()) in all2joty:
+            return all2joty[stripped.lower()]
+        return relation
+
+    rel = map_to_general(relation)
+    coarse = map_to_joty(rel)
+    if coarse == relation and replace_unknown:
+        coarse = "unknown"
+    return coarse
 
 
 def build_relations_map(
-    annotations_dir: str
+    annotations_dir: str,
+    replace_unknown: bool = True
 ) -> dict[str, dict[str, list[str] | str]]:
     """Builds a mapping of all unique relations found across all .rs3 files in
     the given directory, where fine-grained relations are mapped to
@@ -469,19 +463,54 @@ def build_relations_map(
             rs3 = f.read()
         relations_set.update(get_relations_set(rs3))
 
-    return {rel[0]: {"aliases": [],
-                     "type": rel[1]}
-            for rel in relations_set}
+    fine2coarse = {
+        (rel[0], rel[1]): map_fine2coarse(rel[0], replace_unknown=replace_unknown)
+        for rel in relations_set
+    }
+
+    mapped = {
+        coarse: {"aliases": [], "type": None}
+        for coarse in fine2coarse.values()
+    }
+    for (fine, rel_type), coarse in fine2coarse.items():
+        if fine not in mapped[coarse]["aliases"]:
+            mapped[coarse]["aliases"].append(fine)
+        mapped[coarse]["type"] = rel_type
+
+    return mapped
+
+
+def in_notebook() -> bool:
+    try:
+        shell = get_ipython().__class__.__name__
+        return shell == "ZMQInteractiveShell"
+    except Exception:
+        return False
+
+
+def load_texts(texts_dir: str) -> Dict[str, List[str]]:
+    texts = {}
+    for path in (Path(p) for p in glob(f"{texts_dir}/*.txt")):
+        with open(path, "r", encoding="utf-8") as f:
+            texts[path.stem] = [line for line in f if len(line.strip()) > 0]
+    return texts
+
+
+def parse_write_rs3(
+    parser,
+    texts_dir: str,
+    out_dir: str,
+    **kwargs
+) -> Dict[str, List[Dict]]:
+    res = {
+        k: parser.parse(text="".join(v), **kwargs)
+        for k, v in load_texts(texts_dir).items()
+    }
+    for k, v in res.items():
+        with open(f"{out_dir}/{k}_dmrst.rs3", "w", encoding="utf-8") as f:
+            f.write(v["parsed"][0]["rs3"])
+    return res
 
 
 if __name__ == "__main__":
     from pprint import pprint
-    import requests
-
-    # run_docker_container("dplp")
-    # resp = requests.post(
-    #     "http://localhost:5000/dplp",
-    #     json={"text": "Some text to parse"},
-    #     headers={"Content-Type": "application/json"}
-    # )
-    # pprint(resp.json(), sort_dicts=False)
