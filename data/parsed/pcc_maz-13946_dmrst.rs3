@@ -1,67 +1,50 @@
 <rst>
- <header>
-  <relations>
-   <rel name="Background" type="rst"/>
-   <rel name="Contrast" type="multinuc"/>
-   <rel name="Contrast" type="rst"/>
-   <rel name="Elaboration" type="rst"/>
-   <rel name="Evaluation" type="multinuc"/>
-   <rel name="Joint" type="multinuc"/>
-   <rel name="Joint" type="rst"/>
-   <rel name="span" type="rst"/>
-  </relations>
- </header>
- <body>
-  <segment id="1" parent="0" relname="Background">
-   HEIKO HOHENHAUS
-  </segment>
-  <segment id="2" parent="14" relname="Background">
-   Notsignale
-  </segment>
-  <segment id="3" parent="16" relname="Contrast">
-   Die Oranienburger Mittelstadt kann sich glücklich schätzen, dass sie zu den 15 ausgewählten Stadtteilen im Land Brandenburg gehört, die in den nächsten fünf Jahren vom 220 Millionen Mark schweren EU-Förderprogramm "Zukunft im Stadtteil" (ZiS) profitieren werden.
-  </segment>
-  <segment id="4" parent="18" relname="span">
-   Eine erste Bestandsaufnahme der Situation in der Mittelstadt brachte nun ein überraschend negatives Bild.
-  </segment>
-  <segment id="5" parent="20" relname="Contrast">
-   Bisher wurde ihr Zustand zwar als nicht unproblematisch eingeschätzt,
-  </segment>
-  <segment id="6" parent="20" relname="span">
-   einen Vergleich mit schwer gebeutelten Neubaugebieten, wie etwa Velten-Süd, hätten Kommunalpolitiker aber abgelehnt.
-  </segment>
-  <segment id="7" parent="21" relname="Joint">
-   Eine Bürgerbefragung ergab jedoch, dass mehr als die Hälfte der Bewohner der Mittelstadt schon über den Wegzug nachgedacht hat.
-  </segment>
-  <segment id="8" parent="22" relname="Joint">
-   Eine bedeutende Minderheit schätzt die Wohnqualität als "schlecht" oder "sehr schlecht" ein.
-  </segment>
-  <segment id="9" parent="23" relname="Joint">
-   Als deutliches Zeichen für den beginnenen Abstieg wird der Einbau von Sperrgittern an Durchgängen zu Wohnanlagen gewertet.
-  </segment>
-  <segment id="10" parent="23" relname="Joint">
-   Einwohner sprechen von ständigem Vandalismus im Umfeld der Schulen.
-  </segment>
-  <segment id="13" parent="17" relname="span">
-   Das aber wird ohne ein Mitwirken der Mieter und Vermieter in der Mittelstadt nicht funktionieren.
-  </segment>
-  <segment id="11" parent="24" relname="Joint">
-   Dass es nach den Notsignalen wieder Zeichen der Hoffnung gibt,
-  </segment>
-  <segment id="12" parent="24" relname="Joint">
-   dafür könnte das ZiS-Programm sorgen.
-  </segment>
-  <group id="0" type="span"/>
-  <group id="14" parent="0" relname="span" type="span"/>
-  <group id="15" parent="14" relname="span" type="span"/>
-  <group id="16" parent="15" relname="span" type="span"/>
-  <group id="17" parent="15" relname="Evaluation" type="multinuc"/>
-  <group id="18" parent="16" relname="span" type="span"/>
-  <group id="19" parent="18" relname="Elaboration" type="span"/>
-  <group id="20" parent="19" relname="Contrast" type="multinuc"/>
-  <group id="21" parent="19" relname="Contrast" type="multinuc"/>
-  <group id="22" parent="21" relname="Joint" type="multinuc"/>
-  <group id="23" parent="22" relname="Joint" type="multinuc"/>
-  <group id="24" parent="17" relname="Contrast" type="multinuc"/>
- </body>
+    <header>
+        <relations>
+            <rel name="Background" type="rst"/>
+            <rel name="Contrast" type="multinuc"/>
+            <rel name="Elaboration" type="rst"/>
+            <rel name="Evaluation" type="multinuc"/>
+            <rel name="Joint" type="multinuc"/>
+        </relations>
+    </header>
+    <body>
+        <segment id="1" parent="15" relname="Background">HEIKO HOHENHAUS</segment>
+        <segment id="2" parent="16" relname="Background">Notsignale</segment>
+        <segment id="3" parent="19" relname="Contrast">Die Oranienburger Mittelstadt kann sich glücklich schätzen, dass sie zu den 15 ausgewählten Stadtteilen im Land Brandenburg gehört, die in den nächsten fünf Jahren vom 220 Millionen Mark schweren EU-Förderprogramm "Zukunft im Stadtteil" (ZiS) profitieren werden.</segment>
+        <segment id="4" parent="19" relname="span">Eine erste Bestandsaufnahme der Situation in der Mittelstadt brachte nun ein überraschend negatives Bild.</segment>
+        <segment id="5" parent="6" relname="Contrast">Bisher wurde ihr Zustand zwar als nicht unproblematisch eingeschätzt,</segment>
+        <segment id="6" parent="21" relname="span">einen Vergleich mit schwer gebeutelten Neubaugebieten, wie etwa Velten-Süd, hätten Kommunalpolitiker aber abgelehnt.</segment>
+        <segment id="7" parent="22" relname="Joint">Eine Bürgerbefragung ergab jedoch, dass mehr als die Hälfte der Bewohner der Mittelstadt schon über den Wegzug nachgedacht hat.</segment>
+        <segment id="8" parent="23" relname="Joint">Eine bedeutende Minderheit schätzt die Wohnqualität als "schlecht" oder "sehr schlecht" ein.</segment>
+        <segment id="9" parent="24" relname="Joint">Als deutliches Zeichen für den beginnenen Abstieg wird der Einbau von Sperrgittern an Durchgängen zu Wohnanlagen gewertet.</segment>
+        <segment id="10" parent="24" relname="Joint">Einwohner sprechen von ständigem Vandalismus im Umfeld der Schulen.</segment>
+        <segment id="11" parent="25" relname="Joint">Dass es nach den Notsignalen wieder Zeichen der Hoffnung gibt,</segment>
+        <segment id="12" parent="25" relname="Joint">dafür könnte das ZiS-Programm sorgen.</segment>
+        <segment id="13" parent="18" relname="span">Das aber wird ohne ein Mitwirken der Mieter und Vermieter in der Mittelstadt nicht funktionieren.</segment>
+        <group id="14" type="span">
+        </group>
+        <group id="15" type="span" parent="14" relname="span">
+        </group>
+        <group id="16" type="span" parent="15" relname="span">
+        </group>
+        <group id="17" type="span" parent="16" relname="span">
+        </group>
+        <group id="18" type="span" parent="17" relname="Evaluation">
+        </group>
+        <group id="19" type="span" parent="17" relname="span">
+        </group>
+        <group id="20" type="multinuc" parent="4" relname="Elaboration">
+        </group>
+        <group id="21" type="span" parent="20" relname="Contrast">
+        </group>
+        <group id="22" type="multinuc" parent="20" relname="Contrast">
+        </group>
+        <group id="23" type="multinuc" parent="22" relname="Joint">
+        </group>
+        <group id="24" type="multinuc" parent="23" relname="Joint">
+        </group>
+        <group id="25" type="multinuc" parent="13" relname="Contrast">
+        </group>
+    </body>
 </rst>

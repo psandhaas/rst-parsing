@@ -1,74 +1,56 @@
 <rst>
- <header>
-  <relations>
-   <rel name="Attribution" type="rst"/>
-   <rel name="Background" type="rst"/>
-   <rel name="Elaboration" type="rst"/>
-   <rel name="Explanation" type="rst"/>
-   <rel name="Joint" type="multinuc"/>
-   <rel name="Joint" type="rst"/>
-   <rel name="span" type="rst"/>
-  </relations>
- </header>
- <body>
-  <segment id="1" parent="16" relname="span">
-   Mann in England fuhr über 70 Jahre lang ohne Führerschein
-  </segment>
-  <segment id="2" parent="16" relname="Background">
-   Auto
-  </segment>
-  <segment id="3" parent="20" relname="span">
-   Ein Mann ist in England nach eigenen Angaben mehr als 70 Jahre lang ohne Führerschein oder Versicherung Auto gefahren.
-  </segment>
-  <segment id="4" parent="25" relname="span">
-   Wie die Polizei mitteilte, geriet der 1938 geborene Mann in der Nähe von Nottingham mit seinem Mini One in eine Routinekontrolle.
-  </segment>
-  <segment id="5" parent="25" relname="Elaboration">
-   Papiere konnte er nicht vorweisen.
-  </segment>
-  <segment id="6" parent="26" relname="span">
-   Er gab aber an, seit seinem zwölften Lebensjahr hinter dem Steuer zu sitzen,
-  </segment>
-  <segment id="7" parent="26" relname="Elaboration">
-   ohne je einen Führerschein oder eine Versicherung gehabt zu haben.
-  </segment>
-  <segment id="8" parent="24" relname="span">
-   "Irgendwie hat er es geschafft, nie von der Polizei angehalten zu werden",
-  </segment>
-  <segment id="9" parent="27" relname="span">
-   hieß es weiter in dem Facebook-Post,
-  </segment>
-  <segment id="10" parent="27" relname="Elaboration">
-   dessen Authentizität ein Polizeisprecher der Deutschen Presse-Agentur am Freitag bestätigte.
-  </segment>
-  <segment id="13" parent="21" relname="Joint">
-   Die Kontrolle soll bereits am Mittwoch stattgefunden haben.
-  </segment>
-  <segment id="11" parent="28" relname="span">
-   Glücklicherweise sei der Mann auch nie in einen Unfall verwickelt gewesen,
-  </segment>
-  <segment id="12" parent="28" relname="Attribution">
-   so die Mitteilung weiter.
-  </segment>
-  <segment id="14" parent="19" relname="span">
-   Die Polizei rief Autofahrer auf, sich nicht ohne gültige Papiere hinters Steuer zu setzen.
-  </segment>
-  <segment id="15" parent="19" relname="Explanation">
-   Die wachsende Zahl von Kameras mit automatischer Nummernschilderkennung mache es zunehmend wahrscheinlich, dass man dabei erwischt werde.
-  </segment>
-  <group id="0" type="span"/>
-  <group id="16" parent="0" relname="Background" type="span"/>
-  <group id="17" parent="0" relname="span" type="span"/>
-  <group id="18" parent="17" relname="Joint" type="multinuc"/>
-  <group id="19" parent="17" relname="Joint" type="multinuc"/>
-  <group id="20" parent="18" relname="Joint" type="multinuc"/>
-  <group id="21" parent="18" relname="Joint" type="multinuc"/>
-  <group id="22" parent="20" relname="Elaboration" type="span"/>
-  <group id="23" parent="22" relname="Joint" type="multinuc"/>
-  <group id="24" parent="22" relname="Joint" type="multinuc"/>
-  <group id="25" parent="23" relname="Joint" type="multinuc"/>
-  <group id="26" parent="23" relname="Joint" type="multinuc"/>
-  <group id="27" parent="24" relname="Attribution" type="span"/>
-  <group id="28" parent="21" relname="Joint" type="multinuc"/>
- </body>
+    <header>
+        <relations>
+            <rel name="Attribution" type="rst"/>
+            <rel name="Background" type="rst"/>
+            <rel name="Elaboration" type="rst"/>
+            <rel name="Explanation" type="multinuc"/>
+            <rel name="Joint" type="multinuc"/>
+        </relations>
+    </header>
+    <body>
+        <segment id="1" parent="17" relname="span">Mann in England fuhr über 70 Jahre lang ohne Führerschein</segment>
+        <segment id="2" parent="1" relname="Background">Auto</segment>
+        <segment id="3" parent="21" relname="span">Ein Mann ist in England nach eigenen Angaben mehr als 70 Jahre lang ohne Führerschein oder Versicherung Auto gefahren.</segment>
+        <segment id="4" parent="26" relname="span">Wie die Polizei mitteilte, geriet der 1938 geborene Mann in der Nähe von Nottingham mit seinem Mini One in eine Routinekontrolle.</segment>
+        <segment id="5" parent="4" relname="Elaboration">Papiere konnte er nicht vorweisen.</segment>
+        <segment id="6" parent="27" relname="span">Er gab aber an, seit seinem zwölften Lebensjahr hinter dem Steuer zu sitzen,</segment>
+        <segment id="7" parent="6" relname="Elaboration">ohne je einen Führerschein oder eine Versicherung gehabt zu haben.</segment>
+        <segment id="8" parent="25" relname="span">"Irgendwie hat er es geschafft, nie von der Polizei angehalten zu werden",</segment>
+        <segment id="9" parent="28" relname="span">hieß es weiter in dem Facebook-Post,</segment>
+        <segment id="10" parent="9" relname="Elaboration">dessen Authentizität ein Polizeisprecher der Deutschen Presse-Agentur am Freitag bestätigte.</segment>
+        <segment id="11" parent="29" relname="span">Glücklicherweise sei der Mann auch nie in einen Unfall verwickelt gewesen,</segment>
+        <segment id="12" parent="11" relname="Attribution">so die Mitteilung weiter.</segment>
+        <segment id="13" parent="22" relname="Joint">Die Kontrolle soll bereits am Mittwoch stattgefunden haben.</segment>
+        <segment id="14" parent="20" relname="span">Die Polizei rief Autofahrer auf, sich nicht ohne gültige Papiere hinters Steuer zu setzen.</segment>
+        <segment id="15" parent="14" relname="Explanation">Die wachsende Zahl von Kameras mit automatischer Nummernschilderkennung mache es zunehmend wahrscheinlich, dass man dabei erwischt werde.</segment>
+        <group id="16" type="span">
+        </group>
+        <group id="17" type="span" parent="18" relname="Background">
+        </group>
+        <group id="18" type="multinuc" parent="16" relname="span">
+        </group>
+        <group id="19" type="multinuc" parent="18" relname="Joint">
+        </group>
+        <group id="20" type="span" parent="18" relname="Joint">
+        </group>
+        <group id="21" type="span" parent="19" relname="Joint">
+        </group>
+        <group id="22" type="multinuc" parent="19" relname="Joint">
+        </group>
+        <group id="23" type="multinuc" parent="3" relname="Elaboration">
+        </group>
+        <group id="24" type="multinuc" parent="23" relname="Joint">
+        </group>
+        <group id="25" type="span" parent="23" relname="Joint">
+        </group>
+        <group id="26" type="span" parent="24" relname="Joint">
+        </group>
+        <group id="27" type="span" parent="24" relname="Joint">
+        </group>
+        <group id="28" type="span" parent="8" relname="Attribution">
+        </group>
+        <group id="29" type="span" parent="22" relname="Joint">
+        </group>
+    </body>
 </rst>
