@@ -1,0 +1,32 @@
+<rst>
+    <header>
+        <relations>
+            <rel name="Explanation" type="rst"/>
+            <rel name="Joint" type="multinuc"/>
+        </relations>
+    </header>
+    <body>
+        <segment id="1" parent="12" relname="Joint">Kaum ein Beruf ist so nah an der Natur wie der des Jägers</segment>
+        <segment id="2" parent="12" relname="Joint">und die Jagd lässt sich bis in den evolutionären Ursprung des Homo sapiens zurückverfolgen .</segment>
+        <segment id="3" parent="13" relname="Joint">Die Jagd hat dem Menschen erst die Entwicklung zum heutigen Menschen ermöglicht</segment>
+        <segment id="4" parent="13" relname="Joint">und war und ist auch die Basis für den Aufbau und Betrieb der Landwirtschaft .</segment>
+        <segment id="5" parent="14" relname="Joint">Sie brachte auch die Evolution des Hundes und dessen Symbiose mit dem Menschen hervor .</segment>
+        <segment id="6" parent="14" relname="Joint">Heute wird die Bedeutung der Jagd nur selten gesehen</segment>
+        <segment id="7" parent="15" relname="Joint">und spielt sich jenseits der Öffentlichkeit ab .</segment>
+        <segment id="8" parent="15" relname="Joint">Ich spreche mit Jäger und Podcaster Jochen Schumacher über Geschichte , Ausbildung , Ausübung und Bedeutung der Jagd , über das schwierige Verhältnis der modernen Gesellschaft zum Jägertum und vor allem was man persönlich aus der intensiven Begegnung mit der Natur für sich und das Leben lernen kann .</segment>
+        <group id="9" type="multinuc">
+        </group>
+        <group id="10" type="span" parent="9" relname="Joint">
+        </group>
+        <group id="11" type="multinuc" parent="9" relname="Joint">
+        </group>
+        <group id="12" type="multinuc" parent="13" relname="Explanation">
+        </group>
+        <group id="13" type="multinuc" parent="10" relname="span">
+        </group>
+        <group id="14" type="multinuc" parent="11" relname="Joint">
+        </group>
+        <group id="15" type="multinuc" parent="11" relname="Joint">
+        </group>
+    </body>
+</rst>

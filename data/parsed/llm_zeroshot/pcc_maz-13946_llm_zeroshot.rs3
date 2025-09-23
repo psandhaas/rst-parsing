@@ -1,0 +1,46 @@
+<rst>
+    <header>
+        <relations>
+            <rel name="Contrast" type="rst"/>
+            <rel name="Elaboration" type="rst"/>
+            <rel name="Explanation" type="rst"/>
+            <rel name="Joint" type="multinuc"/>
+        </relations>
+    </header>
+    <body>
+        <segment id="1" parent="20" relname="Joint">Eine erste Bestandsaufnahme der Situation in der Mittelstadt brachte nun ein überraschend negatives Bild .</segment>
+        <segment id="2" parent="20" relname="Joint">Bisher wurde ihr Zustand zwar als nicht unproblematisch eingeschätzt ,</segment>
+        <segment id="3" parent="16" relname="Joint">Eine Bürgerbefragung ergab jedoch , dass mehr als die Hälfte der Bewohner der Mittelstadt schon über den Wegzug nachgedacht hat .</segment>
+        <segment id="4" parent="21" relname="Joint">Eine bedeutende Minderheit schätzt die Wohnqualität als " schlecht " oder " sehr schlecht " ein .</segment>
+        <segment id="5" parent="21" relname="Joint">Als deutliches Zeichen für den beginnenen Abstieg wird der Einbau von Sperrgittern an Durchgängen zu Wohnanlagen gewertet .</segment>
+        <segment id="6" parent="17" relname="Joint">Einwohner sprechen von ständigem Vandalismus im Umfeld der Schulen .</segment>
+        <segment id="7" parent="18" relname="span">Dass es nach den Notsignalen wieder Zeichen der Hoffnung gibt ,</segment>
+        <segment id="8" parent="22" relname="Joint">Das aber wird ohne ein Mitwirken der Mieter und Vermieter in der Mittelstadt nicht funktionieren .</segment>
+        <segment id="9" parent="22" relname="Joint">Die Oranienburger Mittelstadt kann sich glücklich schätzen , dass sie zu den 15 ausgewählten Stadtteilen im Land Brandenburg gehört ,</segment>
+        <segment id="10" parent="23" relname="Joint">die in den nächsten fünf Jahren vom 220 Millionen Mark schweren EU-Förderprogramm " Zukunft im Stadtteil " ( ZiS ) profitieren werden .</segment>
+        <segment id="11" parent="23" relname="Joint">einen Vergleich mit schwer gebeutelten Neubaugebieten , wie etwa Velten-Süd , hätten Kommunalpolitiker aber abgelehnt .</segment>
+        <segment id="12" parent="23" relname="Elaboration">dafür könnte das ZiS-Programm sorgen .</segment>
+        <group id="13" type="multinuc">
+        </group>
+        <group id="14" type="span" parent="13" relname="span">
+        </group>
+        <group id="15" type="span" parent="13" relname="Contrast">
+        </group>
+        <group id="16" type="multinuc" parent="14" relname="span">
+        </group>
+        <group id="17" type="multinuc" parent="16" relname="Explanation">
+        </group>
+        <group id="18" type="span" parent="15" relname="span">
+        </group>
+        <group id="19" type="span" parent="18" relname="Elaboration">
+        </group>
+        <group id="20" type="multinuc" parent="16" relname="Joint">
+        </group>
+        <group id="21" type="multinuc" parent="17" relname="Joint">
+        </group>
+        <group id="22" type="multinuc" parent="7" relname="Explanation">
+        </group>
+        <group id="23" type="multinuc" parent="19" relname="span">
+        </group>
+    </body>
+</rst>

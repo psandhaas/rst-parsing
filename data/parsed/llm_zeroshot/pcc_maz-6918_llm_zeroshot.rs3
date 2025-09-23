@@ -1,0 +1,43 @@
+<rst>
+    <header>
+        <relations>
+            <rel name="Contrast" type="rst"/>
+            <rel name="Elaboration" type="rst"/>
+            <rel name="Joint" type="multinuc"/>
+            <rel name="Same-Unit" type="multinuc"/>
+        </relations>
+    </header>
+    <body>
+        <segment id="1" parent="19" relname="Same-Unit">Deshalb ist es zu begrüßen , dass Manfred Stolpe dem weiträumigen Areal vorgestern einen Besuch abstattete .</segment>
+        <segment id="2" parent="19" relname="Same-Unit">Ein beabsichtigter Effekt solcher Dienstreisen des Ministerpräsidenten in die Provinz ist es , möglichst viel öffentliche Aufmerksamkeit auf bestimmte Vorhaben zu lenken .</segment>
+        <segment id="3" parent="19" relname="Elaboration">Um den etwa 7000 Hektar großen Naturpark soll ein Rundweg angelegt werden .</segment>
+        <segment id="4" parent="20" relname="Joint">Das wäre ein bedeutender Schritt zum erklärten Ziel , den ehemaligen Truppenübungsplatz touristisch zu erschließen .</segment>
+        <segment id="5" parent="20" relname="Joint">Die Wanderdüne bei Forst Zinna ist schon jetzt ein bei Auswärtigen und Einheimischen gleichermaßen beliebtes Ausflugsziel .</segment>
+        <segment id="6" parent="16" relname="Joint">Diese Art der Konversion - die Natur erobert frühere Militärflächen zurück - ist vergleichsweise billig .</segment>
+        <segment id="7" parent="21" relname="Joint">Die Abschnitte , auf denen möglicherweise weiterhin gefährliche Munition lagert , bleiben allerdings Sperrgebiet .</segment>
+        <segment id="8" parent="21" relname="Joint">Ob bei der touristischen Erschließung der Konversionsflächen auf lange Sicht neue Arbeitsplätze entstehen , hängt vor allem davon ab , wie viele Neugierige kommen werden .</segment>
+        <segment id="9" parent="17" relname="Joint">Wie gesagt :</segment>
+        <segment id="10" parent="18" relname="Joint">Der Naturpark , der zwischen Jüterbog , Luckenwalde und Treuenbrietzen entsteht , ist außerhalb der Region noch viel zu wenig bekannt .</segment>
+        <segment id="11" parent="18" relname="Joint">Stolpe war schon da .</segment>
+        <group id="12" type="multinuc">
+        </group>
+        <group id="13" type="multinuc" parent="12" relname="span">
+        </group>
+        <group id="14" type="multinuc" parent="12" relname="Contrast">
+        </group>
+        <group id="15" type="span" parent="13" relname="Joint">
+        </group>
+        <group id="16" type="multinuc" parent="13" relname="Joint">
+        </group>
+        <group id="17" type="multinuc" parent="14" relname="Joint">
+        </group>
+        <group id="18" type="multinuc" parent="14" relname="Joint">
+        </group>
+        <group id="19" type="multinuc" parent="15" relname="span">
+        </group>
+        <group id="20" type="multinuc" parent="16" relname="Joint">
+        </group>
+        <group id="21" type="multinuc" parent="17" relname="Joint">
+        </group>
+    </body>
+</rst>

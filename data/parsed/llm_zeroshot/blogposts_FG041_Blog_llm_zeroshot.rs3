@@ -1,0 +1,34 @@
+<rst>
+    <header>
+        <relations>
+            <rel name="Background" type="rst"/>
+            <rel name="Elaboration" type="rst"/>
+            <rel name="Joint" type="multinuc"/>
+            <rel name="Same-Unit" type="multinuc"/>
+        </relations>
+    </header>
+    <body>
+        <segment id="1" parent="12" relname="Same-Unit">Gemeinsam mit Monika Trümper erkunden wir erstmals bei Forschergeist die Archäologie .</segment>
+        <segment id="2" parent="12" relname="Same-Unit">Die Professorin für Klassische Archäologie an der FU Berlin erforscht die Geschichte des antiken Bades- und der damaligen Körperkultur .</segment>
+        <segment id="3" parent="13" relname="Same-Unit">Sie beschäftigt sich mit der Planung und Entwicklung antiker Städte , Platzanlagen , der Bade- und Wohnkultur , der Bedeutung und dem Management von Wasser in antiken Heiligtümern , den archäologischen Quellen zur Wirtschaft sowie der archäologischen Erforschung der Sklaverei .</segment>
+        <segment id="4" parent="13" relname="Same-Unit">Wir lernen in dieser Episode , wie sehr sich die Arbeitsbedingungen von Archäologen mit dem Fortschreiten neuer Technologien verändern .</segment>
+        <segment id="5" parent="14" relname="Joint">Der Einsatz von Drohnen oder neue Möglichkeiten in der Fotografie ermöglichen es , Grabungsstätten und Fundstücke viel detaillierter als bisher zu erfassen</segment>
+        <segment id="6" parent="14" relname="Joint">und für die ( wissenschaftliche ) Nachwelt zu dokumentieren .</segment>
+        <segment id="7" parent="15" relname="Joint">Im Rahmen eines Forschungsprojekts für den Exzellenzcluster Topoi - einem altertumswissenschaftlichen Forschungsverbund von Freier Universität und Humboldt-Universität - hat Monika Trümper in zwei römischen Bädern in Pompeji in den vergangenen Jahren Grabungen durchgeführt .</segment>
+        <segment id="8" parent="15" relname="Joint">Hier erforschte sie , wie Heiz- und Gewölbetechnik sowie Wasserversorgung über Jahrhunderte immer mehr perfektioniert worden sind .</segment>
+        <group id="9" type="multinuc">
+        </group>
+        <group id="10" type="multinuc" parent="9" relname="Joint">
+        </group>
+        <group id="11" type="span" parent="9" relname="Joint">
+        </group>
+        <group id="12" type="multinuc" parent="10" relname="span">
+        </group>
+        <group id="13" type="multinuc" parent="10" relname="Elaboration">
+        </group>
+        <group id="14" type="multinuc" parent="11" relname="span">
+        </group>
+        <group id="15" type="multinuc" parent="14" relname="Background">
+        </group>
+    </body>
+</rst>

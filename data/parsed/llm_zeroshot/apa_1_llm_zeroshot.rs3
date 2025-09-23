@@ -1,0 +1,74 @@
+<rst>
+    <header>
+        <relations>
+            <rel name="Attribution" type="rst"/>
+            <rel name="Background" type="rst"/>
+            <rel name="Elaboration" type="rst"/>
+            <rel name="Joint" type="multinuc"/>
+            <rel name="Same-Unit" type="multinuc"/>
+        </relations>
+    </header>
+    <body>
+        <segment id="1" parent="37" relname="Same-Unit">Die Coronavirus-Variante Omikron ist offiziell in Österreich angekommen:</segment>
+        <segment id="2" parent="37" relname="Same-Unit">“Im Gesundheitsministerium liegen jetzt sämtliche Ergebnisse vor, die es für eine Bestätigung braucht”,</segment>
+        <segment id="3" parent="29" relname="Same-Unit">hieß es aus dem Ressort.</segment>
+        <segment id="4" parent="30" relname="Same-Unit">Bei einem Fall aus Tirol handelt es sich “mit Sicherheit” um die Variante mit der wissenschaftlichen Bezeichnung B.1.1.529.</segment>
+        <segment id="5" parent="30" relname="Same-Unit">Die Tiroler Behörden hatten den Verdachtsfall am Samstagabend bekanntgegeben.</segment>
+        <segment id="6" parent="38" relname="Joint">Von der Infektion betroffen sei eine Person,</segment>
+        <segment id="7" parent="38" relname="Joint">die nach einer Südafrika-Reise positiv auf Covid-19 getestet wurde</segment>
+        <segment id="8" parent="31" relname="Same-Unit">und derzeit keine Symptome aufweise.</segment>
+        <segment id="9" parent="32" relname="Joint">Laut Elmar Rizzoli, Leiter des Tiroler Corona-Einsatzstabes,</segment>
+        <segment id="10" parent="32" relname="Joint">wurden alle Kontaktpersonen umgehend abgesondert.</segment>
+        <segment id="11" parent="39" relname="Joint">Das Land Tirol forderte alle Personen, die in den vergangenen 14 Tagen aus den Ländern Südafrika, Lesotho, Botswana, Simbabwe, Mosambik, Namibia und Eswatini zurückgekehrt sind, auf, einen PCR-Test zu machen.</segment>
+        <segment id="12" parent="39" relname="Joint">Dies sollte am fünften und zehnten Tag nach der Einreise wiederholt werden.</segment>
+        <segment id="13" parent="33" relname="Joint">Bisher meldeten sich 31 Menschen.</segment>
+        <segment id="14" parent="34" relname="Joint">“Neben dem genannten einen positiven Ergebnis liegt für 20 Personen bereits ein negatives Testergebnis vor,</segment>
+        <segment id="15" parent="34" relname="Joint">bei elf Personen sind die Testungen aktuell im Gange”,</segment>
+        <segment id="16" parent="40" relname="Joint">hieß es.</segment>
+        <segment id="17" parent="40" relname="Joint">Die Omikron-Variante von SARS-CoV-2 sorgt weltweit seit Tagen für Schlagzeilen.</segment>
+        <segment id="18" parent="35" relname="Same-Unit">Die WHO arbeitet nach eigenen Angaben mit technischen Partnern zusammen,</segment>
+        <segment id="19" parent="41" relname="Joint">um die Auswirkungen der Variante auf die bestehenden Gegenmaßnahmen wie Impfstoffe zu bewerten.</segment>
+        <segment id="20" parent="41" relname="Joint">Es sei noch unklar, ob B.1.1.259 leichter übertragbar verglichen mit anderen Covid-19-Varianten sei</segment>
+        <segment id="21" parent="36" relname="Same-Unit">oder einen schwereren Krankheitsverlauf nach sich ziehe.</segment>
+        <group id="22" type="multinuc">
+        </group>
+        <group id="23" type="span" parent="22" relname="Joint">
+        </group>
+        <group id="24" type="multinuc" parent="22" relname="Joint">
+        </group>
+        <group id="25" type="span" parent="23" relname="span">
+        </group>
+        <group id="26" type="span" parent="25" relname="Elaboration">
+        </group>
+        <group id="27" type="span" parent="24" relname="Joint">
+        </group>
+        <group id="28" type="span" parent="24" relname="Joint">
+        </group>
+        <group id="29" type="multinuc" parent="25" relname="span">
+        </group>
+        <group id="30" type="multinuc" parent="29" relname="Elaboration">
+        </group>
+        <group id="31" type="multinuc" parent="26" relname="span">
+        </group>
+        <group id="32" type="multinuc" parent="31" relname="Attribution">
+        </group>
+        <group id="33" type="multinuc" parent="27" relname="span">
+        </group>
+        <group id="34" type="multinuc" parent="33" relname="Elaboration">
+        </group>
+        <group id="35" type="multinuc" parent="28" relname="span">
+        </group>
+        <group id="36" type="multinuc" parent="35" relname="Background">
+        </group>
+        <group id="37" type="multinuc" parent="29" relname="Same-Unit">
+        </group>
+        <group id="38" type="multinuc" parent="31" relname="Same-Unit">
+        </group>
+        <group id="39" type="multinuc" parent="33" relname="Joint">
+        </group>
+        <group id="40" type="multinuc" parent="35" relname="Same-Unit">
+        </group>
+        <group id="41" type="multinuc" parent="36" relname="Same-Unit">
+        </group>
+    </body>
+</rst>
