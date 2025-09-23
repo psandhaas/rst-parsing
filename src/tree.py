@@ -11,6 +11,7 @@
 from __future__ import annotations
 from bs4 import BeautifulSoup, Tag
 from bs4.formatter import XMLFormatter
+import os
 import re
 from typing import Dict, Generator, Iterator, List, Literal, Optional, Tuple, Union
 # import networkx as nx
@@ -429,9 +430,9 @@ class Node:
         parent: Optional[Union[Node, Dict]] = None
     ):
         self.id = attrs.get("id")
-        self.span = attrs.get("span")
         self.nuc = attrs.get("nuc")
         self.text = attrs.get("text")
+        self.span = attrs.get("span")
         self.children = children
         self.parent = parent
         self.siblings = attrs.get("siblings", [])
@@ -454,7 +455,7 @@ class Node:
                 if node.id == key:
                     return node
             elif isinstance(key, tuple):
-                if node.span == key:
+                if node.span is not None and node.span == key:
                     return node
             else:
                 raise TypeError(
@@ -494,6 +495,85 @@ class Node:
                 queue.extend([c for c in node.children if c is not None])
         else:
             raise ValueError(f"Unknown traversal order: {order}")
+
+    def _ancestors(self) -> Generator[Node, None, None]:
+        """Get all ancestors of this node, starting from the parent up to and
+        including the root."""
+        node = self
+        while (parent := node.parent) is not None:
+            yield parent
+            node = parent
+        yield node
+
+    def _descendants(
+        self,
+        branch: Literal["left", "right", "all"]
+    ) -> Generator[Node, None, None]:
+        if branch == "left":
+            if len(self.children) > 0 and self.children[0] is not None:
+                yield self.children[0]
+                yield from self.children[0]._descendants(branch)
+        elif branch == "right":
+            if len(self.children) > 1 and self.children[1] is not None:
+                yield self.children[1]
+                yield from self.children[1]._descendants(branch)
+        else:
+            for child in self.children:
+                if child is not None:
+                    yield child
+                    yield from child._descendants(branch)
+
+    def lca(self, other: Node) -> Optional[Node]:
+        """Get the lowest common ancestor of this node and another node.
+        
+        If no common ancestor exists, `None` is returned.
+        """
+        other_ancestors = list(other._ancestors())
+        for ancestor in self._ancestors():
+            if ancestor in other_ancestors:
+                return ancestor
+        return None
+
+    def edu_span2id(self, span: Tuple[int, int]) -> int:
+        """Convert a span of EDU-indices to the `Node.id` of the corresponding
+        node.
+        
+        :raises KeyError: If any EDU in the span is not found in the tree, or
+            if no node with the exact span exists in the tree.
+        :raises ValueError: If any ID in the span doesn't belong to an EDU
+            (i.e. a leaf node).
+        """
+        for edu_id in span:
+            try:
+                edu = self[edu_id]
+                if edu.text is None:
+                    raise ValueError(f"EDU with id={edu_id} is not a leaf node.")
+            except KeyError:
+                raise KeyError(f"EDU with id={edu_id} not found in tree.")
+        try:  # look up the span directly
+            return self[span].id
+        except KeyError:  # span might not be set
+            left, right = self[span[0]], self[span[1]]
+            if (lca := left.lca(right)) is not None:
+                if lca.span is not None:
+                    if (left.id, right.id) == lca.span:
+                        return lca.id
+                    else:
+                        raise KeyError(
+                            f"No node with span=({left.id}, {right.id}) found."
+                        )
+                else:  # set span of LCA for future reference
+                    lca.span = (left.id, right.id)
+                    return lca.id
+
+    def get_edu_span(self) -> Tuple[int, int]:
+        """Get the (non-unique) span of EDU IDs covered by this node."""
+        edu_descendants = sorted(list(
+            n for n in self._descendants("all") if n.text is not None
+        ), key=lambda x: x.id)
+        if len(edu_descendants) == 1:
+            return (edu_descendants[0].id, edu_descendants[0].id)
+        return (edu_descendants[0].id, edu_descendants[-1].id)
 
     @property
     def root(self) -> Node:
@@ -642,6 +722,36 @@ class Node:
             self._type = None
 
     @property
+    def span(self) -> Optional[Tuple[int, int]]:
+        if not hasattr(self, "_span"):
+            self._span = None
+        return self._span
+    
+    @span.setter
+    def span(self, span: Optional[Tuple[int, int]]):
+        if span is None:
+            if self.text is not None:  # leaf node
+                self._span = (self.id, self.id)
+            else:  # get left- & right-most descendants
+                if len(descendants := sorted(list(
+                    d for d in self._descendants("all")
+                    if d.id < self.root.id  # only leafs
+                ), key=lambda n: n.id)) > 1:
+                    self._span = (descendants[0].id, descendants[-1].id)
+                else:
+                    self._span = None
+        elif span is not None and (
+                not isinstance(span, tuple) or len(span) != 2
+                or not all(isinstance(i, int) and i >= 0 for i in span)
+            ):
+            raise TypeError(
+                "Span must be a tuple of two non-negative integers. " +
+                f"Got {type(span)}."
+            )
+        else:
+            self._span = span
+
+    @property
     def rs3_segments(self) -> List[Node]:
         return sorted([
             node for node in self._traverse("level-order")
@@ -671,6 +781,51 @@ class Node:
             (rel, "rst") for rel in mononuc_relations
         }
         return sorted(list(relations), key=lambda x: x[0])
+
+    @property
+    def document(self) -> str:
+        """The document text from which the tree was constructed."""
+        if not hasattr(self, "_document"):
+            self._document = Node.join(self.document_lines)
+        return self._document
+
+    @property
+    def document_lines(self) -> List[str]:
+        """The (whitespace-stripped) lines of text from which the tree was
+        constructed. (Excludes empty lines.)"""
+        if not hasattr(self, "_document_lines"):
+            self._document_lines = [
+                seg.text.strip() for seg in self.rs3_segments
+                if seg.text is not None and len(seg.text.strip()) > 0
+            ]
+        return self._document_lines
+
+    @property
+    def tokens(self) -> List[str]:
+        """Whitespace tokenization of the document text.
+        (Excludes empty tokens.)"""
+        if not hasattr(self, "_tokens"):
+            self._tokens = Node.tokenize(self.document)
+        return self._tokens
+
+    @staticmethod
+    def tokenize(text: Union[str, Node]) -> List[Optional[str]]:
+        """Whitespace tokenization of a text. (Excludes empty tokens.)
+
+        If a Node is provided, its `Node.text` attribute is tokenized if it
+        exists.
+        """
+        if isinstance(text, Node):
+            if text.text is None:
+                return []
+            text = text.text
+        return [t.strip() for t in re.split("\s+", text) if len(t.strip()) > 0]
+
+    @staticmethod
+    def join(tokens: List[str]) -> str:
+        """Join tokens into a whitespace-separated text.
+        (Excludes empty tokens.)"""
+        return " ".join([t.strip() for t in tokens if len(t.strip()) > 0])
 
     def add_child(self, child: Union["Node", Dict]):
         if isinstance(child, dict):
@@ -755,6 +910,198 @@ class Node:
             flags=re.M
         )
         return rs3_string
+
+    @classmethod
+    def from_xml(
+        cls,
+        rs3_str: str,
+        exclude_disjunct_segments: bool = True
+    ) -> Node:
+        """Convert XML nodes to a Node representation.
+
+        :param rs3_str: `.rs3`-XML content as a string.
+        :type rs3_str: str
+        :param exclude_disjunct_segments: Whether to exclude disjunct segments
+        (i.e. segments without a parent, such as headings). Defaults to `True`.
+        :type exclude_disjunct_segments: bool, optional
+        :return: A Node object representing the root of the XML structure.
+        :rtype: Node
+        """
+        def mononuc_rels(soup) -> List[str]:
+            return [
+                rel["name"]
+                for rel in soup.find_all("rel")
+                if rel.get("type") == "rst"
+            ]
+
+        def multinuc_rels(soup) -> List[str]:
+            return [
+                rel["name"]
+                for rel in soup.find_all("rel")
+                if rel.get("type") == "multinuc"
+            ]
+
+        def nuclearity(
+            node: Dict
+        ) -> Optional[Literal["Nucleus", "Satellite"]]:
+            nonlocal mononuc, multinuc
+            if (relname := node.get("relname")) is None:
+                return None
+            if relname == "span" or relname in multinuc:
+                return "Nucleus"
+            return "Satellite"
+
+        def segments(
+            soup, exclude_disjunct: bool = exclude_disjunct_segments
+        ) -> List[Dict]:
+            res = []
+            for node in soup.find_all("segment"):
+                if exclude_disjunct and node.get("parent") is None:
+                    continue
+                else:
+                    res.append({
+                        "id": int(node["id"]),
+                        "parent": int(node.get("parent")),
+                        "text": node.get_text(strip=False),
+                        "type": node.get("type", None),
+                        "relname": node.get("relname"),
+                        "nuc": nuclearity(node),
+                        "children": []
+                    })
+            return sorted(res, key=lambda x: x["id"])
+
+        def groups(soup) -> List[Dict]:
+            res = []
+            for node in soup.find_all("group"):
+                res.append({
+                    "id": int(node["id"]),
+                    "parent": int(node.get("parent")) if node.get("parent") else None,
+                    "text": None,
+                    "type": node.get("type"),
+                    "relname": node.get("relname"),
+                    "nuc": nuclearity(node),
+                    "children": []
+                })
+            return sorted(res, key=lambda x: x["id"])
+
+        def all_nodes(
+            soup, exclude_disjunct: bool = exclude_disjunct_segments
+        ) -> List[Dict]:
+            return segments(soup, exclude_disjunct) + groups(soup)
+
+        def assign_sequential_node_indices(
+            nodes: List[Dict]
+        ) -> Dict[int, Dict]:
+            # Separate segments and groups
+            segments = sorted(
+                [n for n in nodes if n.get("text") is not None],
+                key=lambda x: x["id"]
+            )
+            groups = sorted(
+                [n for n in nodes if n.get("text") is None],
+                key=lambda x: x["id"]
+            )
+            assert len(groups) + len(segments) == len(nodes)
+
+            # Find the root group (parent is None)
+            root_group = next(
+                g for g in groups if g.get("parent") is None
+            )
+            groups = sorted(
+                [g for g in groups if g is not root_group],
+                key=lambda x: x["id"]
+            )
+            assert len(groups) == len(nodes) - len(segments) - 1
+
+            # Assign new IDs
+            old2new = {}
+
+            # Segments: 1..N
+            for edu_id, seg in enumerate(segments, start=1):
+                old2new[seg["id"]] = edu_id
+                seg["id"] = edu_id
+
+            # Root group: N+1
+            root_id = len(segments) + 1
+            old2new[root_group["id"]] = root_id
+            root_group["id"] = root_id
+
+            # Other groups: N+2..N+1+M
+            for group_id, group in enumerate(groups, start=root_id + 1):
+                old2new[group["id"]] = group_id
+                group["id"] = group_id
+
+            # Update parent pointers for all nodes
+            for node in segments + [root_group] + groups:
+                if (par_id := node.get("parent")) is not None:
+                    node["parent"] = old2new.get(par_id, None)
+
+            # Build reindexed dict
+            reindexed = {}
+            for node in segments + [root_group] + groups:
+                reindexed[node["id"]] = node
+
+            return reindexed
+
+        def collect_children(nodes: Dict[int, Dict]) -> Dict[int, Dict]:
+            par2children = {k: [] for k in nodes.keys()}
+            for child_id, child in nodes.items():
+                if (par_id := child.get("parent")) is not None:
+                    par2children[par_id].append(child_id)
+            res = {}
+            for node_id, node in nodes.items():
+                node["children"] = sorted(list(set(par2children[node_id])))
+                res[node_id] = node
+            return res
+
+        def build_node(node: Dict, nodes: Dict[int, Dict]) -> Node:
+            return Node(node, children=[
+                build_node(nodes[child_id], nodes)
+                for child_id in node.get("children", [])
+            ])
+
+        soup = BeautifulSoup(rs3_str, features="xml")
+        mononuc, multinuc = mononuc_rels(soup), multinuc_rels(soup)
+        reindexed = assign_sequential_node_indices(
+            all_nodes(soup, exclude_disjunct=exclude_disjunct_segments)
+        )
+        nodes = collect_children(reindexed)
+        root_node = next(
+            n for n in nodes.values()
+            if n.get("parent") is None and n.get("text") is None
+        )
+        return build_node(root_node, nodes)
+
+    @classmethod
+    def from_rs3(
+        cls,
+        rs3_path: str,
+        exclude_disjunct_segments: bool = True
+    ) -> Node:
+        """Construct an RST dependency-tree from a `.rs3`-XML file.
+
+        :param rs3_path: Path to the `.rs3`-XML file.
+        :type rs3_path: str
+        :param exclude_disjunct_segments: Whether to exclude disjunct segments
+        (i.e. segments without a parent). Defaults to `True`.
+        :type exclude_disjunct_segments: bool, optional
+
+        :return: The root node of the constructed RST tree.
+        :rtype: Node
+        """
+        if not os.path.isfile(rs3_path):
+            raise FileNotFoundError(f"File not found: {rs3_path}")
+        try:
+            with open(rs3_path, "r", encoding="utf-8") as f:
+                rs3 = f.read()
+        except Exception as e:
+            raise IOError(f"Error reading file {rs3_path}: {e}")
+
+        root = cls.from_xml(rs3, exclude_disjunct_segments)
+        for node in root:  # compute spans once all nodes were added
+            node.span = None  # trigger span.setter
+        
+        return root
 
 
 def binarize(nodes) -> Node:
@@ -860,6 +1207,9 @@ def dmrst2rs3(
     )
 
     return rs3_string
+
+
+
 
 
 if __name__ == "__main__":

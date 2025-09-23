@@ -8,11 +8,15 @@
 
 """Utilities for RST parsing using dockerized parsers."""
 
+import boto3
 from bs4 import BeautifulSoup, SoupStrainer
 import docker
+from dotenv import load_dotenv
+from glob import glob
 from IPython import get_ipython
 import json
-from glob import glob
+from langchain_aws import ChatBedrockConverse
+from langchain_openai import AzureChatOpenAI
 import os
 from pathlib import Path
 import requests
@@ -20,6 +24,7 @@ import subprocess
 import time
 from typing import Dict, List, Literal, Optional, Union
 
+from tree import Node
 from rst2dis import rst2dis
 
 
@@ -416,9 +421,9 @@ def map_fine2coarse(relation: str, replace_unknown: bool = True) -> Optional[str
 
     def try_strip_suffix(relation: str) -> str:
         if "-" in relation and len(  # try to strip nuclearity suffixes
-                splt := [x.strip() for x in relation.split("-") if len(x.strip()) > 0]
-            ) == 2 and splt[-1] in ["s", "n", "mn"]:
-                return splt[0]
+                splt := relation.split("-")
+            ) == 2 and splt[-1].strip().lower() in ["s", "n", "mn"]:
+                return splt[0].strip()
         return relation
 
     def map_to_general(relation: str) -> str:
@@ -480,12 +485,35 @@ def build_relations_map(
     return mapped
 
 
-def in_notebook() -> bool:
-    try:
-        shell = get_ipython().__class__.__name__
-        return shell == "ZMQInteractiveShell"
-    except Exception:
-        return False
+def load_env_vars():
+    """Load environment variables from a .env file.
+    
+    :raises ValueError: If any of `'AZURE_OPENAI_BASE_URL'`,
+                        `'AZURE_OPENAI_API_KEY'`, or
+                        `'AZURE_OPENAI_API_VERSION'` is missing.
+    """
+    def in_notebook() -> bool:
+        try:
+            shell = get_ipython().__class__.__name__
+            return shell == "ZMQInteractiveShell"
+        except Exception:
+            return False
+
+    if in_notebook():
+        if (ipython := get_ipython()) is not None:
+            ipython.run_line_magic("load_ext", "dotenv")
+            ipython.run_line_magic("dotenv", "")
+    else:
+        load_dotenv()
+    for env_var in [
+        "AZURE_OPENAI_BASE_URL",
+        "AZURE_OPENAI_API_KEY",
+        "AZURE_OPENAI_API_VERSION"
+    ]:
+        if os.environ.get(env_var) is None:
+            raise ValueError(
+                f"{env_var} not found in environment variables."
+            )
 
 
 def load_texts(texts_dir: str) -> Dict[str, List[str]]:
@@ -494,6 +522,49 @@ def load_texts(texts_dir: str) -> Dict[str, List[str]]:
         with open(path, "r", encoding="utf-8") as f:
             texts[path.stem] = [line for line in f if len(line.strip()) > 0]
     return texts
+
+
+def load_rs3(
+    dir: str,
+    read_as: Literal["node", "soup", "string"] = "node",
+    exclude_disjunct_segments: bool = False
+) -> Dict[str, Union[Node, BeautifulSoup, str]]:
+    if not os.path.isdir(dir):
+        raise FileNotFoundError(f"'{dir}' is not a directory path.")
+    if len(paths := [Path(p) for p in glob(f"{dir}/*.rs3")]) == 0:
+        raise FileNotFoundError(f"No .rs3-files found in directory '{dir}'.")
+    res = {}
+    for p in paths:
+        try:
+            with open(p, "r", encoding="utf-8") as f:
+                rs3 = f.read()
+        except Exception as e:
+            print(f"Encountered an error trying to read '{p.absolute}'.")
+            raise e
+        if read_as == "node":
+            try:
+                res[p.stem] = Node.from_xml(
+                    rs3_str=rs3,
+                    exclude_disjunct_segments=exclude_disjunct_segments
+                )
+            except Exception as e:
+                print(
+                    f"Encountered an error trying to read '{p.stem}' as Node."
+                )
+                raise e
+        elif read_as == "soup":
+            try:
+                res[p.stem] = BeautifulSoup(
+                    rs3, features="xml"
+                )
+            except Exception as e:
+                print(
+                    f"Encountered an error trying to read '{p.stem}' as XML."
+                )
+                raise e
+        else:
+            res[p.stem] = rs3
+    return res
 
 
 def parse_write_rs3(
@@ -512,5 +583,96 @@ def parse_write_rs3(
     return res
 
 
+def _get_aws_bedrock_client():
+    load_env_vars()
+    for env_var in ["AWS_API_KEY", "ANTHROPIC_BASE_URL", "AWS_REGION_NAME"]:
+        if os.environ.get(env_var) is None:
+            raise ValueError(
+                f"{env_var} not found in environment variables."
+            )
+    boto_session = boto3.Session(
+        aws_access_key_id=os.environ["AWS_API_KEY"],
+        aws_secret_access_key=os.environ["AWS_API_KEY"],
+        aws_session_token=os.environ["AWS_API_KEY"]
+    )
+    bedrock_client = boto_session.client(
+        service_name="bedrock-runtime",
+        endpoint_url=os.environ["ANTHROPIC_BASE_URL"],
+        region_name=os.environ["AWS_REGION_NAME"]
+    )
+
+    # API-Key needs to be appended via event hook, as AWS Auth does not
+    # directly support API Key authentication.
+    def _add_api_key(request, operation_name, **kwargs):
+        request.headers["api-key"] = os.environ["AWS_API_KEY"]
+    
+    bedrock_client.meta.events.register(
+        "request-created.bedrock-runtime", _add_api_key
+    )
+    return bedrock_client
+
+
+def _init_llm(
+    model: Literal[
+        "gpt-4.1", "gpt-4o", "o4-mini",
+        "claude-sonnet-4", "claude-3-7-sonnet", "claude-3-5-sonnet",
+        "claude-3-sonnet"
+    ] = "gpt-4.1"
+) -> Union[AzureChatOpenAI, ChatBedrockConverse]:
+    load_env_vars()
+    if model in ["gpt-4.1", "gpt-4o", "o4-mini"]:
+        if model == "o4-mini":
+            api_version = "2025-02-01-preview"
+        else:
+            api_version = os.getenv("AZURE_OPENAI_API_VERSION")
+        return AzureChatOpenAI(
+            api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+            api_version=api_version,
+            base_url=os.getenv("AZURE_OPENAI_BASE_URL"),
+            model=model
+        )
+    else:
+        if model == "claude-sonnet-4":
+            deployment_name = os.getenv("CLAUDE_4_DEPLOYMENT_NAME")
+        elif model == "claude-3-7-sonnet":
+            deployment_name = os.getenv("CLAUDE_3_7_DEPLOYMENT_NAME")
+        elif model == "claude-3-5-sonnet":
+            deployment_name = os.getenv("CLAUDE_3_5_DEPLOYMENT_NAME")
+        elif model == "claude-3-sonnet":
+            deployment_name = os.getenv("CLAUDE_3_DEPLOYMENT_NAME")
+        else:
+            raise ValueError(
+                f"Model '{model}' not recognized for AWS Bedrock."
+            )
+        # Initialize langchain class with pre-configured boto3 client to allow
+        # for API-Key Authentication
+        return ChatBedrockConverse(
+            model=deployment_name, client=_get_aws_bedrock_client()
+        )
+
+
 if __name__ == "__main__":
     from pprint import pprint
+
+    dmrst_dir = "C:/Users/SANDHAP/Repos/rst-parsing/data/parsed/dmrst"
+    dplp_dir = "C:/Users/SANDHAP/Repos/rst-parsing/data/parsed/dplp"
+    gold_dir = "C:/Users/SANDHAP/Repos/rst-parsing/data/gold_annotations"
+
+    # dmrst_rels = build_relations_map(dmrst_dir)
+    # dplp_rels = build_relations_map(dplp_dir)
+    # gold_rels = build_relations_map(gold_dir)
+
+    # all_keys = set(dmrst_rels.keys()) | set(dplp_rels.keys()) | set(gold_rels.keys())
+    # all_rels = {k: {"aliases": [], "type": None} for k in all_keys}
+    # for k in all_keys:
+    #     if k in dmrst_rels:
+    #         all_rels[k]["aliases"].extend(dmrst_rels[k]["aliases"])
+    #         all_rels[k]["type"] = dmrst_rels[k]["type"]
+    #     if k in dplp_rels:
+    #         all_rels[k]["aliases"].extend(dplp_rels[k]["aliases"])
+    #         all_rels[k]["type"] = dplp_rels[k]["type"]
+    #     if k in gold_rels:
+    #         all_rels[k]["aliases"].extend(gold_rels[k]["aliases"])
+    #         all_rels[k]["type"] = gold_rels[k]["type"]
+    #     all_rels[k]["aliases"] = list(set(all_rels[k]["aliases"]))
+    # pprint(all_rels, sort_dicts=False)
