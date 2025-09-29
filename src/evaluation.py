@@ -13,181 +13,21 @@ import pandas as pd
 from pandas.io.formats.style import Styler
 from pathlib import Path
 import re
-from typing import Any, Dict, List, Literal, Tuple, Optional, Union
+from typing import Dict, List, Literal, Tuple, Optional
 
 from tree import Node
 from utils import load_rs3, map_fine2coarse
 
 
-# GOLD_SEGMENTATION: Dict[str, List[str]] = load_texts(
-#     "C:/Users/SANDHAP/Repos/rst-parsing/data/segmented_texts/gold_excluding_disjunct_segments"  # noqa
-# )
-
-
-# class EDUSpans(object):
-#     def __init__(
-#         self,
-#         segmentation: Union[Node, Dict[Any, List[str]]],
-#         gold: Union[str, List[str]]  # file-name or list of EDUs
-#     ):
-#         if isinstance(gold, str):
-#             if gold not in GOLD_SEGMENTATION:
-#                 raise ValueError(
-#                     f"'{gold}' is not a valid identifier of a known document."
-#                 )
-#             else:
-#                 segments = GOLD_SEGMENTATION[gold]
-#         else:
-#             segments = gold
-#         self.gold_segments = segments
-#         self.edus = [
-#             seg.text.strip() for seg in segmentation.rs3_segments
-#         ] if isinstance(segmentation, Node) else [
-#             seg.strip() for seg in segmentation.values()
-#         ]
-#         self.recall = segments
-#         self.precision = segments
-#         self.f1 = segments
-
-#     @property
-#     def edus(self) -> List[str]:
-#         """Get the list of EDUs in the document."""
-#         return self._edus
-
-#     @edus.setter
-#     def edus(self, edus: List[str]):
-#         if not hasattr(self, "_edus"):
-#             if len(edus) == 0:
-#                 raise ValueError("EDU list cannot be empty.")
-#             if not all(isinstance(edu, str) and len(edu) > 0 for edu in edus):
-#                 raise ValueError("All EDUs must be non-empty strings.")
-#             if not EDUSpans.same_text(edus, self.gold_segments):
-#                 raise ValueError(
-#                     "Text of EDU Spans doesn't correspond to the provided " +
-#                     "gold text."
-#                 )
-#             self._edus = edus
-
-#     @property
-#     def recall(self) -> float:
-#         if not hasattr(self, "_recall"):
-#             self.recall = self.gold_segments
-#         return self._recall
-    
-#     @recall.setter
-#     def recall(self, gold_segments: List[str]):
-#         expected: List[str] = [
-#             ln.strip() for ln in gold_segments if len(ln.strip()) > 0
-#         ]
-#         correct = sum(
-#             True for edu in self.edus
-#             if edu in expected
-#         )
-#         self._recall = correct / len(gold_segments)
-
-#     @property
-#     def precision(self) -> float:
-#         if not hasattr(self, "_precision"):
-#             self.precision = self.gold_segments
-#         return self._precision
-    
-#     @precision.setter
-#     def precision(self, gold_segments: List[str]):
-#         expected: List[int] = [
-#             ln.strip() for ln in gold_segments if len(ln.strip()) > 0
-#         ]
-#         correct = sum(
-#             True for edu in self.edus
-#             if edu in expected
-#         )
-#         self._precision = correct / len(self.edus)
-
-#     @property
-#     def f1(self) -> float:
-#         if not hasattr(self, "_f1"):
-#             self.f1 = self.gold_segments
-#         return self._f1
-    
-#     @f1.setter
-#     def f1(self, gold_segments: List[str]):
-#         expected: List[int] = [
-#             ln.strip() for ln in gold_segments if len(ln.strip()) > 0
-#         ]
-#         correct = sum(
-#             True for edu in self.edus
-#             if edu in expected
-#         )
-#         self._f1 = 2 * correct / (
-#             len(expected) + len(self.edus)
-#         )
-
-#     @staticmethod
-#     def tokenize(text: str) -> List[str]:
-#         return [t.strip() for t in text.split(" ") if len(t.strip()) > 0]
-    
-#     @staticmethod
-#     def join(tokens: List[str]) -> str:
-#         return " ".join([t.strip() for t in tokens if len(t.strip()) > 0])
-
-#     @staticmethod
-#     def boundaries(segments: List[str]) -> List[int]:
-#         """Given a sorted list of segments, return the token-indices that
-#         correspond to the split points between segments."""
-#         toks: List[str] = EDUSpans.tokenize(EDUSpans.join(segments))
-#         edus: List[List[str]] = [
-#             EDUSpans.tokenize(edu) for edu in segments
-#         ]
-#         assert toks == [t for edu in edus for t in edu], (
-#             "Tokenization of EDUs & text doesn't match!"
-#         )
-#         boundaries = []
-#         bound = 0
-#         for edu in edus:
-#             n = len(edu)
-#             span_toks, toks = toks[:n], toks[n:]
-#             if span_toks != edu:
-#                 raise ValueError("Tokenization of EDUs & text doesn't match!")
-#             boundaries.append(bound + n)
-#             bound += n
-#         return boundaries
-
-#     @staticmethod
-#     def same_text(segments1: List[str], segments2: List[str]) -> bool:
-#         """Ensure two segmented lists correspond to the same original text."""
-#         return " ".join([
-#             seg.strip() for seg in segments1 if len(seg.strip()) > 0
-#         ]) == " ".join([
-#             seg.strip() for seg in segments2 if len(seg.strip()) > 0
-#         ])
-
-
 def tokens_2_edus(tree: Node) -> Dict[int, int]:
     """Map token indices to EDU indices for a given tree."""
-    doc_tokens: List[str] = tree.tokens
-    edus: List[Node] = sorted(tree.rs3_segments, key=lambda x: x.span[0])
-    res = {}
+    tok2edu = {}
     tok_idx = 0
-    while edus:
-        edu = edus.pop(0)
-        for i, t in enumerate(edu_toks := Node.tokenize(edu)):
-            if t == doc_tokens[tok_idx]:
-                res[tok_idx] = edu.id
-                tok_idx += 1
-            else:
-                expected_ctxt = " ".join(doc_tokens[
-                    max(0, tok_idx-5):min(tok_idx+5, len(doc_tokens))
-                ])
-                actual_ctxt = " ".join(
-                    edu_toks[max(0, i-5):min(i+5, len(edu_toks))]
-                )
-                raise ValueError(
-                    "The tokenization of EDU segments does not match the" +
-                    " tokenization of the full text. Encountered " +
-                    f"unexpected token in EDU {edu.id}:\n" +
-                    f"  Expected: '... {expected_ctxt} ...'\n" +
-                    f"  Got:   '... {actual_ctxt} ...'"
-                )
-    return res
+    for i, edu in enumerate(Node.tokenize(tree, "edus")):
+        for j, _ in enumerate(edu):
+            tok_idx += j
+            tok2edu[tok_idx] = i + 1
+    return tok2edu
 
 
 def edus2tokens(tree: Node) -> Dict[int, List[int]]:
@@ -280,45 +120,73 @@ def align_constituents(
                 right_parents.pop()
         return lca.id
 
-    gold_constituents = tree_spans_2_token_spans(gold)
-    gold_root_span = max(
-        gold_constituents.values(), key=lambda x: (x[1]-x[0], x[0])
-    )
-    parsed_constituents = tree_spans_2_token_spans(parsed)
-    parsed_root_span = max(
-        parsed_constituents.values(), key=lambda x: (x[1]-x[0], x[0])
-    )
-    if gold_root_span != parsed_root_span:
+    if (  # ensure we're aligning results based on the same document text
+        Node._replace_quotation_marks("".join(gold.tokens))
+        != Node._replace_quotation_marks("".join(parsed.tokens))
+    ):
+        gold_text = "\n".join([
+            f"\tEDU {i+1}: {edu.strip()}"
+            for i, edu in enumerate(gold.edus)
+        ])
+        parsed_text = "\n".join([
+            f"\tEDU {i+1}: {edu.strip()}"
+            for i, edu in enumerate(parsed.edus)
+        ])
         raise ValueError(
-            "The root spans of the gold and parsed trees do not match. " +
-            f"Gold: {gold_root_span}, Parsed: {parsed_root_span}"
+            "The texts of the gold and parsed trees do not match in " +
+            f"'{doc_name}'.\n" +
+            f"Gold:\n\t{gold_text}\n---\nParsed:\n\t{parsed_text}"
         )
 
+    gold_constituents = tree_spans_2_token_spans(gold)
+    gold_edus = {k: v for k, v in gold_constituents.items() if k[0] == k[1]}
+    parsed_constituents = tree_spans_2_token_spans(parsed)
+    parsed_edus = {k: v for k, v in parsed_constituents.items() if k[0] == k[1]}
     token_spans = sorted(list(set(
         list(gold_constituents.values()) +
         list(parsed_constituents.values())
     )), key=lambda x: (x[0], x[1] - x[0]))
-    token_spans.remove(gold_root_span)  # remove root span
-    df = pd.DataFrame(
-        {
-            ("Spans", "gold"): [
-                True if span in gold_constituents.values() else False
-                for span in token_spans
-            ],
-            ("Spans", "parsed"): [
-                True if span in parsed_constituents.values() else False
-                for span in token_spans
-            ],
+    # remove root spans
+    token_spans.remove(max(  # gold root span
+        gold_constituents.values(), key=lambda x: (x[1]-x[0], x[0])
+    ))
+    if (parsed_root_span := max(
+        parsed_constituents.values(), key=lambda x: (x[1]-x[0], x[0])
+    )) in token_spans:
+        token_spans.remove(parsed_root_span)
+    
+    # align constituent spans
+    df = pd.DataFrame({
+        ("EDUs", "gold"): [
+            True if span in gold_edus.values() else False
+            for span in token_spans
+        ],
+        ("EDUs", "parsed"): [
+            True if span in parsed_edus.values() else False
+            for span in token_spans
+        ],
+        ("Spans", "gold"): [
+            True if (
+                span in gold_constituents.values()
+                and span not in gold_edus.values()
+            ) else False
+            for span in token_spans
+        ],
+        ("Spans", "parsed"): [
+            True if (
+                span in parsed_constituents.values()
+                and span not in parsed_edus.values()
+            ) else False
+            for span in token_spans
+        ],
         ("Nuclearity", "gold"): [None] * len(token_spans),
         ("Nuclearity", "parsed"): [None] * len(token_spans),
         ("Relations", "gold"): [None] * len(token_spans),
         ("Relations", "parsed"): [None] * len(token_spans),
-        },
-        index=token_spans
-    )
+    }, index=token_spans)
     df.index.name = "token_span"
 
-    # add nuclearity & (coarse) relation labels
+    # add nuclearity & (coarse or fine) relation labels
     try:
         for tok_span in token_spans:
             if tok_span in gold_constituents.values():
@@ -371,57 +239,6 @@ def align_constituents(
     return df
 
 
-# class Metrics:
-#     category: Literal["segmentation", "spans", "nuclearity", "relations"]
-#     precision: float
-#     recall: float
-#     f1: float
-
-#     def __init__(
-#         self,
-#         category: Literal["segmentation", "spans", "nuclearity", "relations"],
-#         gold: Node,
-#         parsed: Node
-#     ):
-#         self.category = category
-#         self.gold = gold
-#         self.parsed = parsed
-#         if category == "segmentation":
-#             self._compute_segmentation()
-#         elif category == "spans":
-#             self._compute_spans()
-#         elif category == "nuclearity":
-#             self._compute_nuclearity()
-#         elif category == "relations":
-#             self._compute_relations()
-#         else:
-#             raise ValueError(
-#                 f"'{category}' is not a valid metric category. Must be one " +
-#                 "of 'segmentation', 'spans', 'nuclearity', or 'relations'."
-#             )
-
-#     def _compute_segmentation(self):
-#         edus = EDUSpans(
-#             segmentation=self.parsed, gold=self.gold.document_lines
-#         )
-#         self.precision = edus.precision
-#         self.recall = edus.recall
-#         self.f1 = edus.f1
-
-#     # TODO
-#     def _compute_spans(self):
-#         df = align_constituents(self.gold, self.parsed)
-
-
-#     # TODO
-#     def _compute_nuclearity(self):
-#         pass
-
-#     # TODO
-#     def _compute_relations(self):
-#         pass
-
-
 class RSTEval:
     def __init__(
         self,
@@ -452,6 +269,7 @@ class RSTEval:
             gold_dir, parsed_dir, exclude_disjunct_segments
         )
         self.name: Optional[str] = None
+        self._caption: Optional[str] = None
         self.aligned: Dict[str, pd.DataFrame] = self._align_all(map_relations)
         self.metrics: pd.DataFrame = self._compute_metrics()
 
@@ -483,24 +301,22 @@ class RSTEval:
             ).items()
         }
         
-        if (m := re.search(
-            r"(.+\d(_blog)?)(_[^\d]+)", parsed_names[0], re.I
-        )) is not None:
-            if len(splt := (n := m.group(3)[1:]).split("_", 1)) == 2:
-                self.name = " ".join([
-                    splt[0].strip().upper(),
-                    f"({splt[1].strip().capitalize().replace('_', '-')})"
-                ])
+        self.name = Path(parsed_dir).name
+        caption = ""
+        for i, splt in enumerate(Path(parsed_dir).name.split("_")):
+            if i == 0:
+                caption += splt.upper().strip()
             else:
-                self.name = n.strip().upper()
+                caption += f" ({splt.strip().capitalize()})"
+        self._caption = caption
 
         return gold, parsed
 
     def _precision(
         self, aligned: pd.DataFrame,
-        category: Literal["Spans", "Nuclearity", "Relations"]
+        category: Literal["EDUs", "Spans", "Nuclearity", "Relations"]
     ) -> float:
-            if category == "Spans":
+            if category in ["EDUs", "Spans"]:
                 tp = (  # True if both gold and parsed are True
                     (aligned[(category, "gold")] == True)
                     & (aligned[(category, "parsed")] == True)
@@ -527,9 +343,9 @@ class RSTEval:
 
     def _recall(
         self, aligned: pd.DataFrame,
-        category: Literal["Spans", "Nuclearity", "Relations"]
+        category: Literal["EDUs", "Spans", "Nuclearity", "Relations"]
     ) -> float:
-            if category == "Spans":
+            if category in ["EDUs", "Spans"]:
                 tp = (  # True if both gold and parsed are True
                     (aligned[(category, "gold")] == True)
                     & (aligned[(category, "parsed")] == True)
@@ -556,7 +372,7 @@ class RSTEval:
 
     def _f1(
         self, aligned: pd.DataFrame,
-        category: Literal["Spans", "Nuclearity", "Relations"]
+        category: Literal["EDUs", "Spans", "Nuclearity", "Relations"]
     ) -> float:
             r = self._recall(aligned, category)
             p = self._precision(aligned, category)
@@ -577,7 +393,7 @@ class RSTEval:
         metrics = {}
         for doc, df in self.aligned.items():
             res = {}
-            for cat in ["Spans", "Nuclearity", "Relations"]:
+            for cat in ["EDUs", "Spans", "Nuclearity", "Relations"]:
                 res[cat] = {"Recall": self._recall(df, cat),
                             "Precision": self._precision(df, cat),
                             "F1": self._f1(df, cat)}
@@ -595,7 +411,7 @@ class RSTEval:
 
         return metrics_df
 
-    def styled(self, caption: str = None) -> Styler:
+    def styled(self) -> Styler:
         """Get a styled version of the metrics table for better visualization
         in Jupyter Notebooks.
 
@@ -605,35 +421,29 @@ class RSTEval:
         :type caption: `str`, optional
 
         """
-        def highlight_max_f1(s):
-            # Highlight the largest F1-values of each category
-            is_max = s == s.max()
-            return ['font-weight: bold' if v else '' for v in is_max]
-
-        def italicize_average(val):
-            return "font-style: italic" if val == "Average" else ""
-
-        # Apply highlighting and center columns using Styler
-        styled = (
-            self.metrics.style
-            .format("{:.3f}")  # Format all values to 3 decimals, no trailing zeros
-            .set_table_styles([
-                # Divider above the Average row
-                {'selector': 'tbody tr:last-child', 'props': [
-                    ('border-top', '1px solid black')
-                ]}
-            ])
-            .apply(highlight_max_f1, subset=[('Spans', 'F1')], axis=0)
-            .apply(highlight_max_f1, subset=[('Nuclearity', 'F1')], axis=0)
-            .apply(highlight_max_f1, subset=[('Relations', 'F1')], axis=0)
-            .applymap_index(italicize_average, level=0)
+        return self.metrics.style.set_table_styles([
+            # Divider above the Average row
+            {'selector': 'tbody tr:last-child', 'props': [
+                ('border-top', '1px solid black')
+            ]}
+        ]).highlight_max(
+            subset=[
+                ("EDUs", "F1"), ("Spans", "F1"),
+                ("Nuclearity", "F1"), ("Relations", "F1")
+            ],
+            color="black",
+            axis=0,
+            props="textbf:--rwrap;"
+        ).map_index(
+            lambda x: "textit:--rwrap;" if x == "Average" else "",
+            axis=0, level=0
+        ).format_index(
+            escape="latex"
+        ).format(
+            precision=3
         )
-        if self.name is not None or caption is not None:
-            styled.set_caption(self.name if caption is None else caption)
-        return styled
 
-    # FIXME: use df and kwargs of to_latex()
-    def to_latex(self, caption: str = None) -> str:
+    def to_latex(self, caption: str = None, label: str = None) -> str:
         """Export the metrics table to LaTeX format.
         
         :param caption: Optional caption for the table. If not provided,
@@ -641,13 +451,79 @@ class RSTEval:
             and parsed files, if possible. Defaults to `None`.
         :type caption: `str`, optional
         """
-        return self.styled(caption=caption).to_latex()
+        def fix_latex_table(latex_str, caption, label):
+            # Remove HTML style line
+            latex_str = re.sub(r'\\tbody.*?black\n', '', latex_str)
 
+            # Wrap multicol titles in \textbf{}
+            latex_str = re.sub(
+                r'(\\multicolumn\{\d+\}\{\w\}\{)([^\}]+)',
+                lambda m: "".join([
+                    m.group(1),
+                    "\\textbf{",
+                    m.group(2),
+                    "}"
+                ]),
+                latex_str
+            )
 
-if __name__ == "__main__":
-    from pprint import pprint
+            # Combine header lines
+            latex_str = re.sub(
+                r' & Recall & Precision & F1 & Recall & Precision & F1 & Recall & Precision & F1 & Recall & Precision & F1 \\\\\nDocument &  &  &  &  &  &  &  &  &  &  &  &  \\\\\n',
+                r'Document & Recall & Precision & F1 & Recall & Precision & F1 & Recall & Precision & F1 & Recall & Precision & F1 \\\\\n',
+                latex_str
+            )
 
-    parsed_dir = "C:/Users/SANDHAP/Repos/rst-parsing/data/parsed/llm_zeroshot"
-    gold_dir = "C:/Users/SANDHAP/Repos/rst-parsing/data/gold_annotations"
-    rst_eval = RSTEval(parsed_dir, gold_dir)
-    styled = rst_eval.styled()
+            # Add \midrule above Average row
+            latex_str = re.sub(
+                r'(\\textit{Average}.*?\\\\)',
+                r'\\midrule\n\1',
+                latex_str
+            )
+
+            # Wrap tabular in resizebox
+            if (
+                tabular_match := re.search(
+                    r'(\\begin{tabular}.*?\\end{tabular})',
+                    latex_str, re.DOTALL
+                )
+            ):
+                tabular_block = tabular_match.group(1)
+                resized_tabular = f'\t\\resizebox{{\\textwidth}}{{!}}{{\n{tabular_block}}}'
+                latex_str = latex_str.replace(tabular_block, resized_tabular)
+
+            # Insert caption and label below tabular-environment
+            if caption is None:
+                caption = ""
+            if label is None:
+                label = ""
+            latex_str = re.sub(
+                r"(\\end\{table\*\})",
+                lambda m: "".join([
+                    "\t\\caption{",
+                    caption,
+                    "}\n\t\\label{",
+                    label,
+                    "}\n",
+                    m.group(1)
+                ]),
+                latex_str, re.DOTALL
+            )
+
+            return latex_str
+
+        if caption is None:
+            caption = self._caption or ""
+        if label is None:
+            label = f"tab:{self.name}" if self.name is not None else ""
+        return fix_latex_table(
+            self.styled().to_latex(
+                environment="table*",
+                column_format="l|rrr|rrr|rrr|rrr",
+                multicol_align="c",
+                hrules=True
+            ),
+            caption,
+            label
+        )
+ 

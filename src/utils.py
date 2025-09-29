@@ -19,13 +19,11 @@ from langchain_aws import ChatBedrockConverse
 from langchain_openai import AzureChatOpenAI
 import os
 from pathlib import Path
-import requests
 import subprocess
 import time
 from typing import Dict, List, Literal, Optional, Union
 
 from tree import Node
-from rst2dis import rst2dis
 
 
 def ensure_docker_desktop_running(
@@ -68,6 +66,24 @@ def ensure_docker_desktop_running(
     raise RuntimeError("Docker Desktop did not start within the timeout period.")
 
 
+def wait_for_container(container, timeout: int = 60) -> None:
+    """Waits for a Docker container to be in 'running' state.
+
+    Args:
+        container: The Docker container object.
+        timeout (int): Maximum seconds to wait for the container to start.
+
+    Raises:
+        RuntimeError: If the container does not start within the timeout period.
+    """
+    for _ in range(timeout):
+        container.reload()
+        if container.status == "running":
+            return
+        time.sleep(1)
+    raise RuntimeError("Container did not start within the timeout period.") 
+
+
 def run_docker_container(image_name: Literal["dmrst", "dplp"]) -> str:
     """Run a Docker container with the specified image name.
 
@@ -92,7 +108,7 @@ def run_docker_container(image_name: Literal["dmrst", "dplp"]) -> str:
             ports=ports,
             detach=True
         )
-        _wait_for_service("http://localhost:8000/docs")
+        wait_for_container(container)
         return container.name
     elif image_name == "dplp":
         image = f"mohamadisara20/{image_name}-env:ger"
@@ -102,30 +118,18 @@ def run_docker_container(image_name: Literal["dmrst", "dplp"]) -> str:
             name=image_name,
             ports={"5000/tcp": 5000},
             volumes={
-                r"C:/Users/Philipp/Repos/DPLP-German": {"bind": "/home/DPLP", "mode": "rw"}
+                r"C:/Users/SANDHAP/Repos/DPLP-German": {"bind": "/home/DPLP", "mode": "rw"}
             },
             working_dir="/home/DPLP",
             command="python3 ger_rest_api.py",
             detach=True
         )
+        wait_for_container(container)
+        return container.name
     else:
         raise ValueError(
             "Invalid image name. Must be one of: 'dmrst', 'dplp'."
         )
-
-
-def _wait_for_service(url, timeout=60):
-    start = time.time()
-    while True:
-        try:
-            resp = requests.post(url, json={"texts": [""], "batch_size": 1})
-            if resp.status_code == 200:
-                break
-        except Exception:
-            pass
-        if time.time() - start > timeout:
-            raise RuntimeError(f"Service at {url} did not become responsive in time.")
-        time.sleep(1)
 
 
 def stop_and_rm_container(container_name: str) -> None:

@@ -9,12 +9,11 @@
 """Interfaces for comparing different RST parsers."""
 
 from langchain_core.language_models.chat_models import BaseChatModel
-import os
 import requests
 from typing import Dict, List, Literal, Optional, Union
 
 from llm_graph import parse_rst
-from tree import binarize, dmrst_nodes, Node
+from tree import Node
 from utils import (
     run_docker_container, stop_and_rm_container,
     _init_llm
@@ -44,21 +43,6 @@ class DMRSTParser:
         )
 
         return resp.json()
-    
-    @staticmethod
-    def dmrst2rs3(
-        dmrst_tree: Union[str, List[str]],
-        edu_spans: Dict[int, str],
-        save_path: Optional[str] = None
-    ) -> str:
-        nodes = dmrst_nodes(dmrst_tree, edu_spans)
-        tree = binarize(nodes)
-        rs3 = tree.to_rs3()
-        if save_path is not None:
-            os.makedirs(os.path.dirname(save_path), exist_ok=True)
-            with open(save_path, "w", encoding="utf-8") as f:
-                f.write(rs3)
-        return rs3
 
     def stop(self):
         stop_and_rm_container(self.container_name)
@@ -94,23 +78,28 @@ class LLMParser:
             "claude-3-sonnet"
         ] = "gpt-4.1"
     ):
-        # self.llm: BaseChatModel = _init_llm(model=model)
-        self.model = model
-        # self.prompt = str(
-        #     "Analysiere die RST-Struktur des folgenden Texts:\n{text}\n\n" +
-        #     "Hier sind die EDU-Segmente des Texts:\n{segmentation}"
-        # )
+        llm = _init_llm(model=model)
+        # ensure structured output is supported
+        if type(llm).bind_tools is BaseChatModel.bind_tools:
+            raise NotImplementedError(
+                "with_structured_output is not implemented for this model."
+            )
+        self.model = llm
 
     def parse(
         self,
-        text: Union[str, list[str]],
+        text: Optional[Union[str, List[str]]] = None,
+        edus: Optional[Union[List[str], List[List[str]]]] = None,
         return_structured_output: bool = False
     ) -> Union[List[Node], List[Dict]]:
-        """Segment the provided texts into EDUs & parse their RST trees using
-        an LLM and structured prompting.
+        """Parse RST trees using an LLM and structured prompting.
         
-        :param text: The input text(s) to be parsed.
-        :type text: `str | List[str]`
+        :param text: The input text(s) to be segmented and parsed. If ´None´,
+            `edus` must be provided.
+        :type text: `str | List[str] | None`, optional
+        :param edus: Pre-segmented EDUs for the input text(s). If `None`,
+            `text` must be provided.
+        :type edus: `List[str] | List[List[str]] | None`, optional
         :param return_structured_output: Whether to return the raw structured
             output. If `False`, the structured output will be converted to a binary
             tree of `Node` objects. Defaults to `False`.
@@ -128,124 +117,38 @@ class LLMParser:
             Optional[Span],
             List[Optional[Span]
         ]`
+
+        :raises ValueError: If neither `text` nor `edus` or both is provided.
         """
+        if (text is None and edus is None) or (text is not None and edus is not None):
+            raise ValueError("Exactly one of `text` or `edus` must be provided.")
+        if edus is not None:
+            return parse_rst(
+                model=self.model,
+                edus=edus,
+                return_structured_output=return_structured_output
+            )
         return parse_rst(
-            text=text,
             model=self.model,
+            text=text,
             return_structured_output=return_structured_output
         )
 
-    # @property
-    # def prompt(self) -> str:
-    #     return self._prompt
-    
-    # @prompt.setter
-    # def prompt(self, prompt: str = "{text}\n\n{segmentation}"):
-    #     if len(prompt := prompt.strip()) == 0:
-    #         raise ValueError(
-    #             "Prompt cannot be an empty string. It must contain at least " +
-    #             "the placeholders {text} and {segmentation} to insert the " +
-    #             "input text and its EDU segmentation."
-    #         )
-    #     self._prompt = prompt
-
-    # def _call_llm(
-    #     self,
-    #     model: Literal["gpt-4o", "gpt-4.1"],
-    #     messages: list[Dict[str, str]],
-    #     output_format: Optional[BaseModel] = None,
-    #     return_full_response: bool = False,
-    #     **kwargs
-    # ) -> Union[str, BaseModel, ChatCompletion, ParsedChatCompletion]:
-    #     try:
-    #         if output_format is not None:
-    #             completion = self.client.beta.chat.completions.parse(
-    #                 model=model,
-    #                 messages=messages,
-    #                 response_format=output_format,
-    #                 **kwargs
-    #             )
-    #             if return_full_response:
-    #                 return completion
-    #             return completion.choices[0].message.parsed  # BaseModel
-    #         else:
-    #             completion = self.client.chat.completions.create(
-    #                 model=model,
-    #                 messages=messages,
-    #                 **kwargs
-    #             )
-    #             if return_full_response:
-    #                 return completion
-    #             return completion.choices[0].message.content  # str
-    #     except Exception as e:
-    #         print(f"Error calling LLM!")
-    #         raise e
-
-    # def _segment(
-    #     self,
-    #     text: str,
-    #     model: Literal["gpt-4o", "gpt-4.1"],
-    #     **kwargs
-    # ) -> Segmentation:
-    #     """Prompts the LLM to segment the input text into EDUs using the
-    #     `Segmentation` output format.
-        
-    #     :returns: Original document, partitioned into EDUs.
-    #     :rtype: `Segmentation`
-    #     """
-    #     kwargs.pop("return_full_response", None)
-    #     msg = [{
-    #         "role": "user",
-    #         "content": f"Segmentiere den folgenden Text in EDUs:\n{text}"
-    #     }]
-    #     resp = self._call_llm(
-    #         model=model,
-    #         messages=msg,
-    #         output_format=Segmentation,
-    #         return_full_response=False,
-    #         **kwargs
-    #     )
-    #     return resp
-
-    # def parse(
-    #     self,
-    #     text: Union[str, list[str]],
-    #     model: Literal["gpt-4o", "gpt-4.1"] = "gpt-4.1",
-    #     **kwargs
-    # ) -> List[Union[str, BaseModel, ChatCompletion, ParsedChatCompletion]]:
-    #     if isinstance(text, str):
-    #         text = [text]
-    #     output_format = kwargs.pop("output_format", RSTTree)
-    #     res = []
-    #     for t in text:
-    #         seg: Segmentation = self._segment(t, model, **kwargs)
-    #         msg = [{
-    #             "role": "user",
-    #             "content": self.prompt.format(
-    #                 text=t, segmentation=seg.model_dump_json()
-    #             )
-    #         }]
-    #         res.append(self._call_llm(
-    #             model=model,
-    #             messages=msg,
-    #             output_format=output_format,
-    #             **kwargs
-    #         ))
-    #     return res
-
 
 if __name__ == "__main__":
-    from glob import glob
-    from pathlib import Path
-    from pprint import pprint
     from utils import load_texts
 
-    gold_dir = "C:/Users/SANDHAP/Repos/rst-parsing/data/gold_annotations"
     texts_dir = "C:/Users/SANDHAP/Repos/rst-parsing/data/texts"
     segmented_texts_dir = "C:/Users/SANDHAP/Repos/rst-parsing/data/segmented_texts/gold_excluding_disjunct_segments"
-    res_dir = "C:/Users/SANDHAP/Repos/rst-parsing/data/parsed"
 
-    texts = load_texts(segmented_texts_dir)
-    text = "".join(list(texts.values())[3])
+    texts = load_texts(texts_dir)
+    segmented_texts = load_texts(segmented_texts_dir)
+
     llm_rst = LLMParser("gpt-4.1")
-    root = llm_rst.parse(text)[0]
+    unsegmented_w_linebreaks_parsed = llm_rst.parse(
+        text=list("".join(t) for t in texts.values())
+    )
+    presegmented_parsed = llm_rst.parse(
+        edus=list(segmented_texts.values())
+    )
+    print(presegmented_parsed[0].to_rs3())

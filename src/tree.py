@@ -11,10 +11,10 @@
 from __future__ import annotations
 from bs4 import BeautifulSoup, Tag
 from bs4.formatter import XMLFormatter
+from nltk import word_tokenize
 import os
 import re
 from typing import Dict, Generator, Iterator, List, Literal, Optional, Tuple, Union
-# import networkx as nx
 
 
 class GroupNode(dict):
@@ -783,49 +783,130 @@ class Node:
         return sorted(list(relations), key=lambda x: x[0])
 
     @property
-    def document(self) -> str:
-        """The document text from which the tree was constructed."""
-        if not hasattr(self, "_document"):
-            self._document = Node.join(self.document_lines)
-        return self._document
-
-    @property
-    def document_lines(self) -> List[str]:
-        """The (whitespace-stripped) lines of text from which the tree was
-        constructed. (Excludes empty lines.)"""
-        if not hasattr(self, "_document_lines"):
-            self._document_lines = [
-                seg.text.strip() for seg in self.rs3_segments
-                if seg.text is not None and len(seg.text.strip()) > 0
+    def edus(self) -> List[str]:
+        """Sorted list of (unaltered) EDU-texts."""
+        if not hasattr(self, "_edus"):
+            self._edus = [
+                edu.text for edu in sorted(
+                    self.rs3_segments, key=lambda x: x.span[0]
+                ) if edu.text is not None
             ]
-        return self._document_lines
+        return self._edus
 
     @property
     def tokens(self) -> List[str]:
-        """Whitespace tokenization of the document text.
-        (Excludes empty tokens.)"""
+        """Canonicalized tokenization of the document's text."""
         if not hasattr(self, "_tokens"):
-            self._tokens = Node.tokenize(self.document)
+            self._tokens = Node.tokenize(self, "doc")
         return self._tokens
 
     @staticmethod
-    def tokenize(text: Union[str, Node]) -> List[Optional[str]]:
-        """Whitespace tokenization of a text. (Excludes empty tokens.)
-
-        If a Node is provided, its `Node.text` attribute is tokenized if it
-        exists.
-        """
-        if isinstance(text, Node):
-            if text.text is None:
-                return []
-            text = text.text
-        return [t.strip() for t in re.split("\s+", text) if len(t.strip()) > 0]
+    def _add_ws_to_intra_sent_punct(text: str) -> str:
+        return re.sub(
+            r"(.)([,:;\-–—])(\s)?", r"\g<1> \g<2>\g<3>", text
+        )
+    
+    @staticmethod
+    def _replace_quotation_marks(text: str) -> str:
+        text = re.sub(r'``|´´', r'"', text)
+        text = re.sub(r'‘|’', r"'", text)
+        text = re.sub(r"''", r'"', text)
+        text = re.sub(r'“|”', r'"', text)
+        return text
 
     @staticmethod
-    def join(tokens: List[str]) -> str:
-        """Join tokens into a whitespace-separated text.
-        (Excludes empty tokens.)"""
-        return " ".join([t.strip() for t in tokens if len(t.strip()) > 0])
+    def _rejoin_hyphenated_words(toks: List[str]) -> List[str]:
+        tokens = []
+        i = 0
+        while i < len(toks):
+            tok = toks[i]
+            # If previous token ends with hyphen, join with current
+            if (
+                tokens
+                and tokens[-1].endswith('-')
+                and re.match(r'^[a-zA-Zäöüß\d]', tok)
+            ):
+                tokens[-1] += tok
+            # If current token starts with hyphen, join with previous if exists
+            elif (
+                tokens
+                and tok.startswith('-')
+                and re.match(r'[a-zA-Zäöüß\d]$', tokens[-1])
+            ):
+                tokens[-1] += tok
+            # If current token ends with hyphen and next token starts with letter/digit, join them
+            elif (
+                tok.endswith('-')
+                and i + 1 < len(toks)
+                and re.match(r'^[a-zA-Zäöüß\d]', toks[i + 1])
+            ):
+                tokens.append(tok + toks[i + 1])
+                i += 1  # Skip next token
+            else:
+                tokens.append(tok)
+            i += 1
+            if (
+                len(tokens) > 1
+                and tokens[-1].startswith("-")
+            ):
+                tokens.append(
+                    "".join([tokens.pop(-2), tokens.pop(-1)])
+                )
+        return [t.strip() for t in tokens if len(t.strip()) > 0]
+
+    @staticmethod
+    def tokenize(
+        target: Union[Node, str], text: Literal["doc", "edus", "text"]
+    ) -> Union[List[str], List[List[str]]]:
+        """Apply canonicalized tokenization such that:
+        - punctuation characters are separated iff they are at word boundaries
+        - hyphenated words are re-joined and treated as single tokens
+        - empty and whitespace-only tokens are excluded
+
+        :param target: The target to tokenize. Either a Node object or a
+            string of text.
+        :type target: Union[Node, str]
+        :param text: What to tokenize. If `target` is a Node, this can be
+            `"doc"` (the full document text), `"edus"` (the EDUs as a list of
+            strings), or `"text"` (the `Node.text` attribute). If `target` is
+            a string, this parameter is ignored.
+        :type text: Literal["doc", "edus", "text"]
+
+        :return: A list of tokens or a list of lists of tokens (if
+            `text="edus"`).
+        :rtype: List[str] | List[List[str]]
+        """
+        if isinstance(target, str):
+            return Node._rejoin_hyphenated_words(
+                word_tokenize(
+                    Node._replace_quotation_marks(
+                        Node._add_ws_to_intra_sent_punct(target)
+                    )
+                )
+            )
+        else:  # Node
+            if text == "text":  # tokenize only this Node's text (if any)
+                if target.text is None:
+                    return []
+                return Node._rejoin_hyphenated_words(
+                    word_tokenize(
+                        Node._replace_quotation_marks(
+                            Node._add_ws_to_intra_sent_punct(target.text.strip())
+                        )
+                    )
+                )
+            edus = [
+                Node._replace_quotation_marks(
+                    Node._add_ws_to_intra_sent_punct(edu.text.strip())
+                )
+                for edu in sorted(target.rs3_segments, key=lambda x: x.span[0])
+            ]
+            if text == "edus":
+                return [
+                    Node._rejoin_hyphenated_words(word_tokenize(edu))
+                    for edu in edus
+                ]
+            return Node._rejoin_hyphenated_words(word_tokenize(" ".join(edus)))
 
     def add_child(self, child: Union["Node", Dict]):
         if isinstance(child, dict):
@@ -1209,69 +1290,51 @@ def dmrst2rs3(
     return rs3_string
 
 
-
-
-
 if __name__ == "__main__":
-    from pprint import pprint
-    
-    # dmrst_tree = [
-    #     '(1:Satellite=Background:1,2:Nucleus=span:19)',
-    #     '(2:Nucleus=Joint:17,18:Nucleus=Joint:19)',
-    #     '(2:Nucleus=Joint:14,15:Nucleus=Joint:17)',
-    #     '(2:Nucleus=Joint:8,9:Nucleus=Joint:14)',
-    #     '(2:Nucleus=span:6,7:Satellite=Elaboration:8)',
-    #     '(2:Nucleus=span:5,6:Satellite=Elaboration:6)',
-    #     '(2:Nucleus=span:4,5:Satellite=Elaboration:5)',
-    #     '(2:Nucleus=span:2,3:Satellite=Elaboration:4)',
-    #     '(3:Nucleus=span:3,4:Satellite=Attribution:4)',
-    #     '(7:Nucleus=Joint:7,8:Nucleus=Joint:8)',
-    #     '(9:Nucleus=Joint:10,11:Nucleus=Joint:14)',
-    #     '(9:Nucleus=Temporal:9,10:Nucleus=Temporal:10)',
-    #     '(11:Nucleus=Joint:11,12:Nucleus=Joint:14)',
-    #     '(12:Nucleus=span:13,14:Satellite=Attribution:14)',
-    #     '(12:Nucleus=Joint:12,13:Nucleus=Joint:13)',
-    #     '(15:Satellite=Background:15,16:Nucleus=span:17)',
-    #     '(16:Nucleus=span:16,17:Satellite=Enablement:17)',
-    #     '(18:Nucleus=Joint:18,19:Nucleus=Joint:19)'
-    # ]
-    # edu_spans = {
-    #     0: 'Ministerium bestätigte Omikron-Fall in Österreich',
-    #     1: 'Die Coronavirus-Variante Omikron ist offiziell in Österreich angekommen:',
-    #     2: '“Im Gesundheitsministerium liegen jetzt sämtliche Ergebnisse vor, die es für eine Bestätigung braucht”,',
-    #     3: 'hieß es aus dem Ressort.',
-    #     4: 'Bei einem Fall aus Tirol handelt es sich “mit Sicherheit” um die Variante mit der wissenschaftlichen Bezeichnung B.1.1.529.',
-    #     5: 'Die Tiroler Behörden hatten den Verdachtsfall am Samstagabend bekanntgegeben.',
-    #     6: 'Von der Infektion betroffen sei eine Person, die nach einer Südafrika-Reise positiv auf Covid-19 getestet wurde und derzeit keine Symptome aufweise.',
-    #     7: 'Laut Elmar Rizzoli, Leiter des Tiroler Corona-Einsatzstabes, wurden alle Kontaktpersonen umgehend abgesondert.',
-    #     8: 'Das Land Tirol forderte alle Personen, die in den vergangenen 14 Tagen aus den Ländern Südafrika, Lesotho, Botswana, Simbabwe, Mosambik, Namibia und Eswatini zurückgekehrt sind, auf, einen PCR-Test zu machen.',
-    #     9: 'Dies sollte am fünften und zehnten Tag nach der Einreise wiederholt werden.',
-    #     10: 'Bisher meldeten sich 31 Menschen.',
-    #     11: '“Neben dem genannten einen positiven Ergebnis liegt für 20 Personen bereits ein negatives Testergebnis vor,',
-    #     12: 'bei elf Personen sind die Testungen aktuell im Gange”,',
-    #     13: 'hieß es.',
-    #     14: 'Die Omikron-Variante von SARS-CoV-2 sorgt weltweit seit Tagen für Schlagzeilen.',
-    #     15: 'Die WHO arbeitet nach eigenen Angaben mit technischen Partnern zusammen,',
-    #     16: 'um die Auswirkungen der Variante auf die bestehenden Gegenmaßnahmen wie Impfstoffe zu bewerten.',
-    #     17: 'Es sei noch unklar, ob B.1.1.259 leichter übertragbar verglichen mit anderen Covid-19-Varianten sei',
-    #     18: 'oder einen schwereren Krankheitsverlauf nach sich ziehe.'
-    # }
+    # Example usage    
+    dmrst_tree = [
+        '(1:Satellite=Background:1,2:Nucleus=span:19)',
+        '(2:Nucleus=Joint:17,18:Nucleus=Joint:19)',
+        '(2:Nucleus=Joint:14,15:Nucleus=Joint:17)',
+        '(2:Nucleus=Joint:8,9:Nucleus=Joint:14)',
+        '(2:Nucleus=span:6,7:Satellite=Elaboration:8)',
+        '(2:Nucleus=span:5,6:Satellite=Elaboration:6)',
+        '(2:Nucleus=span:4,5:Satellite=Elaboration:5)',
+        '(2:Nucleus=span:2,3:Satellite=Elaboration:4)',
+        '(3:Nucleus=span:3,4:Satellite=Attribution:4)',
+        '(7:Nucleus=Joint:7,8:Nucleus=Joint:8)',
+        '(9:Nucleus=Joint:10,11:Nucleus=Joint:14)',
+        '(9:Nucleus=Temporal:9,10:Nucleus=Temporal:10)',
+        '(11:Nucleus=Joint:11,12:Nucleus=Joint:14)',
+        '(12:Nucleus=span:13,14:Satellite=Attribution:14)',
+        '(12:Nucleus=Joint:12,13:Nucleus=Joint:13)',
+        '(15:Satellite=Background:15,16:Nucleus=span:17)',
+        '(16:Nucleus=span:16,17:Satellite=Enablement:17)',
+        '(18:Nucleus=Joint:18,19:Nucleus=Joint:19)'
+    ]
+    edu_spans = {
+        0: 'Ministerium bestätigte Omikron-Fall in Österreich',
+        1: 'Die Coronavirus-Variante Omikron ist offiziell in Österreich angekommen:',
+        2: '“Im Gesundheitsministerium liegen jetzt sämtliche Ergebnisse vor, die es für eine Bestätigung braucht”,',
+        3: 'hieß es aus dem Ressort.',
+        4: 'Bei einem Fall aus Tirol handelt es sich “mit Sicherheit” um die Variante mit der wissenschaftlichen Bezeichnung B.1.1.529.',
+        5: 'Die Tiroler Behörden hatten den Verdachtsfall am Samstagabend bekanntgegeben.',
+        6: 'Von der Infektion betroffen sei eine Person, die nach einer Südafrika-Reise positiv auf Covid-19 getestet wurde und derzeit keine Symptome aufweise.',
+        7: 'Laut Elmar Rizzoli, Leiter des Tiroler Corona-Einsatzstabes, wurden alle Kontaktpersonen umgehend abgesondert.',
+        8: 'Das Land Tirol forderte alle Personen, die in den vergangenen 14 Tagen aus den Ländern Südafrika, Lesotho, Botswana, Simbabwe, Mosambik, Namibia und Eswatini zurückgekehrt sind, auf, einen PCR-Test zu machen.',
+        9: 'Dies sollte am fünften und zehnten Tag nach der Einreise wiederholt werden.',
+        10: 'Bisher meldeten sich 31 Menschen.',
+        11: '“Neben dem genannten einen positiven Ergebnis liegt für 20 Personen bereits ein negatives Testergebnis vor,',
+        12: 'bei elf Personen sind die Testungen aktuell im Gange”,',
+        13: 'hieß es.',
+        14: 'Die Omikron-Variante von SARS-CoV-2 sorgt weltweit seit Tagen für Schlagzeilen.',
+        15: 'Die WHO arbeitet nach eigenen Angaben mit technischen Partnern zusammen,',
+        16: 'um die Auswirkungen der Variante auf die bestehenden Gegenmaßnahmen wie Impfstoffe zu bewerten.',
+        17: 'Es sei noch unklar, ob B.1.1.259 leichter übertragbar verglichen mit anderen Covid-19-Varianten sei',
+        18: 'oder einen schwereren Krankheitsverlauf nach sich ziehe.'
+    }
 
-    # G = build_graph(dmrst_tree, edu_spans)
-    # nx.draw(G, edge_labels="relname", ax=plt.gca(), with_labels=True)
-
-    # print(rs3_str := dmrst2rs3(dmrst_tree, edu_spans))
-    # nodes = construct_tree(dmrst_tree, edu_spans)
-    # for node in nodes.values():
-    #     if (par_id := node.get("parent")) and (par := nodes[par_id]):
-    #         if par.get("type") is None and par.get("text") is None:
-    #             pprint([
-    #                 node, par
-    #             ], sort_dicts=False)
-
-    # nodes = dmrst_nodes(dmrst_tree, edu_spans)
-    # root = binarize(nodes)
-    # pprint([n for n in root])
-    # for n in root:
-    #     print(str(n.to_tag()))
-    # print(root.to_rs3())
+    nodes = dmrst_nodes(dmrst_tree, edu_spans)
+    root = binarize(nodes)
+    print([n for n in root])
+    print(root.to_rs3())

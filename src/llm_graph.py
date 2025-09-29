@@ -11,12 +11,14 @@ prompting."""
 
 from __future__ import annotations
 from enum import Enum
+from glob import glob
 from IPython.display import Image, display
 from langchain_core.language_models.chat_models import BaseChatModel
 from langgraph.graph import MessagesState, StateGraph, START, END
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.pregel.main import GraphRecursionError
 from operator import add
+from pathlib import Path
 from pydantic import BaseModel, Field, model_validator
 from typing import Dict, List, Literal, Optional, Union
 from typing_extensions import Annotated
@@ -440,12 +442,52 @@ def set_id(span: Span, state: State) -> Span:
     return span
 
 
+def construct_examples():
+    def load_texts_and_trees() -> Dict[str, Dict[str, Union[str, Node]]]:
+        examples_dir = "C:/Users/SANDHAP/Repos/rst-parsing/data/examples"
+        texts = {}
+        for p in glob(f"{examples_dir}/*.txt"):
+            with open(p, "r", encoding="utf-8") as f:
+                texts[Path(p).stem] = f.read().split("\n\n")[-1]  # no headings
+        examples = {}
+        for file in texts.keys():
+            examples[file] = {
+                "text": texts[file],
+                "tree": Node.from_rs3(
+                    f"{examples_dir}/{file}.rs3",
+                    exclude_disjunct_segments=True
+                )
+            }
+        return examples
+    
+    def segmentation(example: Dict[str, Union[str, Node]]) -> Segmentation:
+        return Segmentation(
+            document=example["text"], edus_=example["tree"].edus
+        )
+
+    def init_state(example: Dict[str, Union[str, Node]]) -> State:
+        return enqueue_parent(State(
+            text=example["text"],
+            edus=segmentation(example).edus,
+            queue=[Span(start=1, end=len(segmentation(example).edus))],
+        ))
+
+    def get_split_args(example: Dict[str, Union[str, Node]]):
+        for i, node in enumerate(example["tree"]):
+            if i > 0:  # skip root
+
+
+    examples = load_texts_and_trees()
+    pass
+
+
 ## Nodes ##
 def segment_text(state: State):
     """Segmentiere den Input-Text in EDUs."""
     prompt = f"Segmentiere den folgenden Text in EDUs:\n{state['text']}"
     res = llm.with_structured_output(Segmentation).invoke(prompt)
     return {"edus": res.edus}
+
 
 
 def create_root(state: State):
@@ -618,17 +660,25 @@ def should_continue(state: State) -> Literal["parse", END]:
 
 
 ## Graph ##
-def build_graph() -> CompiledStateGraph:
+def build_graph(parse_only: bool = False) -> CompiledStateGraph:
+    """Compile the state graph for RST parsing.
+    
+    :param parse_only: If `True`, only perform parsing, i.e. without segmenting
+        the input text into EDUs. Defaults to `False`.
+    :type parse_only: `bool`, optional
+
+    :return: The compiled state graph.
+    :rtype: `CompiledStateGraph`
+    """
+    
     graph: StateGraph[State, None, State, State] = StateGraph(State)
-    graph.add_node("Segmentation", segment_text)
+
     graph.add_node("Create root span", create_root)
     graph.add_node("Enqueue parent span", enqueue_parent)
     graph.add_node("Split parent into child-spans", split_parent)
     graph.add_node("Assign nuclearity to children", assign_nuc_to_children)
     graph.add_node("Assign relation and types", assign_relation_and_types)
 
-    graph.add_edge(START, "Segmentation")
-    graph.add_edge("Segmentation", "Create root span")
     graph.add_edge("Create root span", "Enqueue parent span")
     graph.add_edge("Enqueue parent span", "Split parent into child-spans")
     graph.add_edge("Split parent into child-spans", "Assign nuclearity to children")
@@ -641,6 +691,14 @@ def build_graph() -> CompiledStateGraph:
             END: END
         }
     )
+
+    if parse_only:
+        graph.add_edge(START, "Create root span")
+    else:
+        graph.add_node("Segmentation", segment_text)
+        graph.add_edge(START, "Segmentation")
+        graph.add_edge("Segmentation", "Create root span")
+
     return graph.compile()
 
 
@@ -694,22 +752,28 @@ def structured_output_to_node(llm_output: Dict) -> Node:
 
 
 def parse_rst(
-    text: Union[str, List[str]],
-    model: Literal[
-        "gpt-4.1", "gpt-4o", "o4-mini",
-        "claude-sonnet-4", "claude-3-7-sonnet", "claude-3-5-sonnet",
-        "claude-3-sonnet"
-    ] = "gpt-4.1",
+    model: BaseChatModel,
+    text: Optional[Union[str, List[str]]] = None,
+    edus: Optional[Union[List[str], List[List[str]]]] = None,
     return_structured_output: bool = False
 ) -> Union[List[Node], List[Dict]]:
     """Convenience wrapper for parsing the RST trees of texts, using the
     provided LLM.
     
-    :param text: The input text(s) to be parsed.
-    :type text: `str | List[str]`
-    :param llm: The language model to use for parsing. *Note that the underlying
+    :param model: The language model to use for parsing. *Note that the underlying
         model must support structured output.*
-    :type llm: `langchain_core.language_models.chat_models.BaseChatModel`
+    :type model: `langchain_core.chat_models.BaseChatModel`
+    :param text: The input text(s) to be parsed. If provided, the text will be
+        segmented into EDUs before parsing. If a list of texts is provided, it
+        is treated as a batch of documents. If `None`, pre-segmented EDUs must
+        be provided via the `edus` parameter.
+    :type text: `str | List[str] | None`
+    :param edus: A list of pre-segmented EDUs to use for parsing. If provided,
+        the LLM will skip the segmentation step and directly parse an RST-tree
+        from the EDUs. If a list of lists is provided, it is treated as a batch
+        of documents. If `None`, the input text(s) must be provided via the
+        `text` parameter.
+    :type edus: `List[str] | List[List[str]] | None`
     :param return_structured_output: Whether to return the raw structured
         output. If `False`, the structured output will be converted to a binary
         tree of `Node` objects. Defaults to `False`.
@@ -717,8 +781,8 @@ def parse_rst(
 
     :return: The root `Node` of the constructed tree or the raw structured
         output as a dict with keys `'text'`, `'edus'`, `'spans'`, `'queue'`,
-        `'current_parent'`, and `'current_children'`. If a list of texts is
-        provided, a list of `Node` or dicts is returned.
+        `'current_parent'`, and `'current_children'`. If a batch of inputs is
+        provided, a list is returned.
     :rtype: `Node` | `Dict[str, Union[
         str,
         List[EDU],
@@ -727,37 +791,51 @@ def parse_rst(
         Optional[Span],
         List[Optional[Span]
     ]`
-    """
-    global llm
-    llm = _init_llm(model)
-    # ensure structured output is supported
-    if type(llm).bind_tools is BaseChatModel.bind_tools:
-        raise NotImplementedError(
-            "with_structured_output is not implemented for this model."
-        )
 
-    graph: CompiledStateGraph = build_graph()
+    :raises ValueError: If neither `text` nor `edus` or both is provided.
+    :raises NotImplementedError: If the provided model does not support
+        structured output.
+    """
+    if text is None and edus is None:
+        raise ValueError("Either `text` or `edus` must be provided.")
+    if text is not None and edus is not None:
+        raise ValueError("Only one of `text` or `edus` can be provided.")
+    
+    # prepare input and graph
+    if edus is not None:
+        graph = build_graph(parse_only=True)
+        if not isinstance(edus, list):
+            edus = [edus]
+        input: List[Dict[str, Dict[int, EDU]]] = [
+            {"edus": Segmentation(
+                document=None,
+                edus_=[EDU(text=seg) for seg in edu]
+            ).edus} for edu in edus
+        ]
+    else:
+        graph: CompiledStateGraph = build_graph()
+        if not isinstance(text, list):
+            text = [text]
+        input = [{"text": txt} for txt in text]
+
+    global llm
+    llm = model
     max_recursion_limit = 150
-    if isinstance(text, str):
+    if len(input) == 1:
         try:
-            res = graph.invoke({"text": text}, {"recursion_limit": 100})
+            res = [graph.invoke(input[0], {"recursion_limit": 100})]
         except GraphRecursionError:
             print(
                 "Graph recursion limit reached at 100 steps. " +
                 f"Increasing limit to {max_recursion_limit} and retrying..."
             )
-            res = graph.invoke(
-                {"text": text}, {"recursion_limit": max_recursion_limit}
-            )
-        if return_structured_output:
-            res = [res]
-        else:
-            res = [structured_output_to_node(res)]
-        return res
+            res = [graph.invoke(
+                input[0], {"recursion_limit": max_recursion_limit}
+            )]
     else:
         try:
             res = graph.batch(
-                [{"text": t} for t in text], {"recursion_limit": 100}
+                [inp for inp in input], {"recursion_limit": 100}
             )
         except GraphRecursionError:
             print(
@@ -765,25 +843,10 @@ def parse_rst(
                 f"Increasing limit to {max_recursion_limit} and retrying..."
             )
             res = graph.batch(
-                [{"text": t} for t in text],
+                [inp for inp in input],
                 {"recursion_limit": max_recursion_limit}
             )
-        if return_structured_output:
-            return res
-        return [structured_output_to_node(r) for r in res]
 
-
-if __name__ == "__main__":
-    from utils import load_texts
-    from pprint import pprint
-    from langchain_core.runnables.graph import MermaidDrawMethod
-
-    # texts_dir = "C:/Users/SANDHAP/Repos/rst-parsing/data/texts"
-    # texts = load_texts(texts_dir)
-    # text = "\n".join(list(texts.values())[3])
-    
-    # llm = _init_llm("gpt-4.1")
-    graph = build_graph()
-    display(Image(graph.get_graph().draw_mermaid()))
-
-    # pprint(root := parse_rst(text, llm), sort_dicts=False)
+    if return_structured_output:
+        return res
+    return [structured_output_to_node(r) for r in res]
