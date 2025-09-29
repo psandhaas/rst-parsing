@@ -1,0 +1,58 @@
+<rst>
+    <header>
+        <relations>
+            <rel name="Attribution" type="rst"/>
+            <rel name="Elaboration" type="rst"/>
+            <rel name="Joint" type="multinuc"/>
+            <rel name="Same-Unit" type="multinuc"/>
+        </relations>
+    </header>
+    <body>
+        <segment id="1" parent="24" relname="Joint">Die Zahl der Arbeitslosen ist im Vergleich zur Vorwoche leicht gesunken.</segment>
+        <segment id="2" parent="24" relname="Joint">Derzeit sind 406.987 Personen beim AMS arbeitslos gemeldet oder in Schulung,</segment>
+        <segment id="3" parent="25" relname="Joint">das sind um 3.520 Personen weniger als noch vor einer Woche.</segment>
+        <segment id="4" parent="25" relname="Joint">336.996 Personen sind auf Arbeitssuche,</segment>
+        <segment id="5" parent="31" relname="Joint">69.991 nehmen an Schulungsmaßnahmen teil,</segment>
+        <segment id="6" parent="31" relname="Joint">geht aus aktuellen Zahlen des Arbeitsministeriums hervor.</segment>
+        <segment id="7" parent="26" relname="Same-Unit">Ein Anstieg wurde bei den Anmeldungen zur Kurzarbeit verzeichnet,</segment>
+        <segment id="8" parent="21" relname="Attribution">diese kletterten von 114.961 auf 136.995.</segment>
+        <segment id="9" parent="27" relname="Joint">“Trotz der für diese Zeit des Jahres üblichen saisonalen Effekte verzeichnen wir derzeit sinkende Arbeitslosenzahlen.</segment>
+        <segment id="10" parent="27" relname="Joint">Bemerkenswert ist, dass die Arbeitslosigkeit mit derzeit 406.987 arbeitslos gemeldeten Personen inklusive Teilnehmerinnen und Teilnehmern an AMS Schulungen um knapp 23.700 Personen unter dem Niveau der Vergleichswoche 2019 liegt”,</segment>
+        <segment id="11" parent="28" relname="Joint">erklärte Arbeitsminister Martin Kocher (ÖVP) am Dienstag laut Aussendung.</segment>
+        <segment id="12" parent="28" relname="Joint">Die rückläufigen Zahlen zeigen, dass die Auswirkungen der Pandemie den Arbeitsmarkt nur mehr in gewissen Bereichen wie der Langzeitarbeitslosigkeit prägen,</segment>
+        <segment id="13" parent="29" relname="Joint">hieß es in der Aussendung.</segment>
+        <segment id="14" parent="29" relname="Joint">Positiv sei auch, dass sich die Jugendarbeitslosigkeit nach nationaler Definition auf niedrigerem Niveau als vor der Krise bewege.</segment>
+        <segment id="15" parent="30" relname="Joint">Die Quote liegt derzeit bei 6,9 Prozent,</segment>
+        <segment id="16" parent="30" relname="Joint">2019 waren es noch 7,6 Prozent.</segment>
+        <group id="17" type="multinuc">
+        </group>
+        <group id="18" type="span" parent="17" relname="span">
+        </group>
+        <group id="19" type="multinuc" parent="17" relname="Elaboration">
+        </group>
+        <group id="20" type="span" parent="18" relname="span">
+        </group>
+        <group id="21" type="multinuc" parent="20" relname="Elaboration">
+        </group>
+        <group id="22" type="span" parent="19" relname="Joint">
+        </group>
+        <group id="23" type="span" parent="19" relname="Joint">
+        </group>
+        <group id="24" type="multinuc" parent="20" relname="span">
+        </group>
+        <group id="25" type="multinuc" parent="24" relname="Elaboration">
+        </group>
+        <group id="26" type="multinuc" parent="21" relname="span">
+        </group>
+        <group id="27" type="multinuc" parent="22" relname="span">
+        </group>
+        <group id="28" type="multinuc" parent="27" relname="Attribution">
+        </group>
+        <group id="29" type="multinuc" parent="30" relname="Attribution">
+        </group>
+        <group id="30" type="multinuc" parent="23" relname="span">
+        </group>
+        <group id="31" type="multinuc" parent="26" relname="Same-Unit">
+        </group>
+    </body>
+</rst>

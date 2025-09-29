@@ -1,0 +1,59 @@
+<rst>
+    <header>
+        <relations>
+            <rel name="Attribution" type="rst"/>
+            <rel name="Background" type="rst"/>
+            <rel name="Elaboration" type="rst"/>
+            <rel name="Enablement" type="rst"/>
+            <rel name="Joint" type="multinuc"/>
+        </relations>
+    </header>
+    <body>
+        <segment id="1" parent="24" relname="Joint">Ein Mann ist in England nach eigenen Angaben mehr als 70 Jahre lang ohne Führerschein oder Versicherung Auto gefahren.</segment>
+        <segment id="2" parent="24" relname="Joint">Wie die Polizei mitteilte,</segment>
+        <segment id="3" parent="25" relname="Joint">geriet der 1938 geborene Mann in der Nähe von Nottingham mit seinem Mini One in eine Routinekontrolle.</segment>
+        <segment id="4" parent="25" relname="Joint">Papiere konnte er nicht vorweisen.</segment>
+        <segment id="5" parent="26" relname="Joint">Er gab aber an,</segment>
+        <segment id="6" parent="26" relname="Joint">seit seinem zwölften Lebensjahr hinter dem Steuer zu sitzen,</segment>
+        <segment id="7" parent="27" relname="Joint">ohne je einen Führerschein oder eine Versicherung gehabt zu haben.</segment>
+        <segment id="8" parent="27" relname="Joint">"Irgendwie hat er es geschafft, nie von der Polizei angehalten zu werden",</segment>
+        <segment id="9" parent="28" relname="Joint">hieß es weiter in dem Facebook-Post,</segment>
+        <segment id="10" parent="28" relname="Joint">dessen Authentizität ein Polizeisprecher der Deutschen Presse-Agentur am Freitag bestätigte.</segment>
+        <segment id="11" parent="29" relname="Joint">Glücklicherweise sei der Mann auch nie in einen Unfall verwickelt gewesen,</segment>
+        <segment id="12" parent="29" relname="Joint">so die Mitteilung weiter.</segment>
+        <segment id="13" parent="30" relname="Joint">Die Kontrolle soll bereits am Mittwoch stattgefunden haben.</segment>
+        <segment id="14" parent="30" relname="Joint">Die Polizei rief Autofahrer auf,</segment>
+        <segment id="15" parent="31" relname="Joint">sich nicht ohne gültige Papiere hinters Steuer zu setzen.</segment>
+        <segment id="16" parent="31" relname="Joint">Die wachsende Zahl von Kameras mit automatischer Nummernschilderkennung mache es zunehmend wahrscheinlich, dass man dabei erwischt werde.</segment>
+        <group id="17" type="multinuc">
+        </group>
+        <group id="18" type="multinuc" parent="17" relname="Joint">
+        </group>
+        <group id="19" type="multinuc" parent="17" relname="Joint">
+        </group>
+        <group id="20" type="span" parent="18" relname="span">
+        </group>
+        <group id="21" type="span" parent="18" relname="Elaboration">
+        </group>
+        <group id="22" type="span" parent="19" relname="Joint">
+        </group>
+        <group id="23" type="span" parent="19" relname="Joint">
+        </group>
+        <group id="24" type="multinuc" parent="20" relname="span">
+        </group>
+        <group id="25" type="multinuc" parent="24" relname="Background">
+        </group>
+        <group id="26" type="multinuc" parent="21" relname="span">
+        </group>
+        <group id="27" type="multinuc" parent="26" relname="Attribution">
+        </group>
+        <group id="28" type="multinuc" parent="29" relname="Attribution">
+        </group>
+        <group id="29" type="multinuc" parent="22" relname="span">
+        </group>
+        <group id="30" type="multinuc" parent="23" relname="span">
+        </group>
+        <group id="31" type="multinuc" parent="30" relname="Enablement">
+        </group>
+    </body>
+</rst>

@@ -1,0 +1,23 @@
+<rst>
+    <header>
+        <relations>
+            <rel name="Contrast" type="rst"/>
+            <rel name="Joint" type="multinuc"/>
+        </relations>
+    </header>
+    <body>
+        <segment id="1" parent="9" relname="Joint">Kaum ein Beruf ist so nah an der Natur wie der des Jägers und die Jagd lässt sich bis in den evolutionären Ursprung des Homo sapiens zurückverfolgen .</segment>
+        <segment id="2" parent="9" relname="Joint">Die Jagd hat dem Menschen erst die Entwicklung zum heutigen Menschen ermöglicht und war und ist auch die Basis für den Aufbau und Betrieb der Landwirtschaft .</segment>
+        <segment id="3" parent="7" relname="Joint">Sie brachte auch die Evolution des Hundes und dessen Symbiose mit dem Menschen hervor .</segment>
+        <segment id="4" parent="8" relname="Joint">Heute wird die Bedeutung der Jagd nur selten gesehen und spielt sich jenseits der Öffentlichkeit ab .</segment>
+        <segment id="5" parent="8" relname="Joint">Ich spreche mit Jäger und Podcaster Jochen Schumacher über Geschichte , Ausbildung , Ausübung und Bedeutung der Jagd , über das schwierige Verhältnis der modernen Gesellschaft zum Jägertum und vor allem was man persönlich aus der intensiven Begegnung mit der Natur für sich und das Leben lernen kann .</segment>
+        <group id="6" type="span">
+        </group>
+        <group id="7" type="multinuc" parent="6" relname="span">
+        </group>
+        <group id="8" type="multinuc" parent="7" relname="Contrast">
+        </group>
+        <group id="9" type="multinuc" parent="7" relname="Joint">
+        </group>
+    </body>
+</rst>

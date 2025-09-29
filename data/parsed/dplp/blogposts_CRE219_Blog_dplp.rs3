@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?><rst>
+<rst>
   <header>
     <relations>
       <rel name="Antithesis" type="rst"/>
@@ -29,26 +29,26 @@
       <rel name="background" type="rst"/>
       <rel name="conjunction" type="multinuc"/>
       <rel name="eelaboration" type="rst"/>
-      <rel name="elaboration" type="rst"/>
-      <rel name="evaluations" type="rst"/>
       <rel name="list" type="multinuc"/>
     </relations>
   </header>
   <body>
     <segment id="3" parent="5" relname="background">Anfang der 90er Jahre veränderte die Maueröffnung gemeinsam mit der Ravekultur die gesellschaftliche Landschaft in Deutschland schlagartig .</segment>
-    <segment id="11" parent="9" relname="span">Auf die depressiven 80er folgte eine Generation von feierwütigen aber auch überaus kreativen Jugendlichen , die sich ihre neu gewonnenen Freiräume auf großartigste ausschmückten .</segment>
-    <segment id="13" parent="11" relname="elaboration">Begleitet von einem neuen Sound und Lebensgefühl entstand eine neue Dimension von Partys in der viele Zuflucht von einer andererseits komplexen und überfordernden Welt fanden .</segment>
-    <segment id="17" parent="15" relname="span">Marc - André Janizewski ist einer der Gestalter dieser Generation ,</segment>
-    <segment id="21" parent="19" relname="conjunction">der gemeinsam mit seinem Kollegen Markus das Partykollektiv Pyonen begründete</segment>
-    <segment id="25" parent="23" relname="conjunction">und mit der Nation of Gondwana eine der ältesten Partytraditionen der Technozeit in Deutschland etablierten</segment>
-    <segment id="27" parent="23" relname="conjunction">und gemeinsam mit dem Chaos Computer Club das Chaos Communication Camp ermöglicht haben .</segment>
-    <segment id="29" parent="7" relname="evaluations">Wir sprechen über Freiräume , das Techno- und das Sicherheitsgefühl , Musik und DJs , Essen und Trinken und über Motivation und Verantwortung zwischen Veranstaltern , Mitstreitern und Gästen .</segment>
+    <segment id="9" parent="7" relname="list">Auf die depressiven 80er folgte eine Generation von feierwütigen aber auch überaus kreativen Jugendlichen , die sich ihre neu gewonnenen Freiräume auf großartigste ausschmückten .</segment>
+    <segment id="13" parent="11" relname="span">Begleitet von einem neuen Sound und Lebensgefühl entstand eine neue Dimension von Partys ,</segment>
+    <segment id="15" parent="13" relname="eelaboration">in der viele Zuflucht von einer andererseits komplexen und überfordernden Welt fanden .</segment>
+    <segment id="21" parent="19" relname="span">Marc - André Janizewski ist einer der Gestalter dieser Generation ,</segment>
+    <segment id="25" parent="23" relname="conjunction">der gemeinsam mit seinem Kollegen Markus das Partykollektiv Pyonen begründete</segment>
+    <segment id="29" parent="27" relname="conjunction">und mit der Nation of Gondwana eine der ältesten Partytraditionen der Technozeit in Deutschland etablierten</segment>
+    <segment id="31" parent="27" relname="conjunction">und gemeinsam mit dem Chaos Computer Club das Chaos Communication Camp ermöglicht haben .</segment>
+    <segment id="33" parent="17" relname="span">Wir sprechen über Freiräume , das Techno- und das Sicherheitsgefühl , Musik und DJs , Essen und Trinken und über Motivation und Verantwortung zwischen Veranstaltern , Mitstreitern und Gästen .</segment>
     <group id="1" type="span"/>
-    <group id="5" type="span" parent="1" relname="span"/>
-    <group id="7" type="multinuc" parent="5" relname="span"/>
-    <group id="9" type="span" parent="7" relname="list"/>
-    <group id="15" type="span" parent="7" relname="list"/>
-    <group id="19" type="multinuc" parent="17" relname="eelaboration"/>
-    <group id="23" type="multinuc" parent="19" relname="conjunction"/>
+    <group id="5" type="multinuc" parent="1" relname="span"/>
+    <group id="7" type="multinuc" parent="5" relname="list"/>
+    <group id="11" type="span" parent="7" relname="list"/>
+    <group id="17" type="span" parent="5" relname="list"/>
+    <group id="19" type="span" parent="33" relname="background"/>
+    <group id="23" type="multinuc" parent="21" relname="eelaboration"/>
+    <group id="27" type="multinuc" parent="23" relname="conjunction"/>
   </body>
 </rst>

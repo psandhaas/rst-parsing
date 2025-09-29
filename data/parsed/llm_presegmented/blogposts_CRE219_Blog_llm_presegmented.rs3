@@ -1,0 +1,33 @@
+<rst>
+    <header>
+        <relations>
+            <rel name="Elaboration" type="rst"/>
+            <rel name="Joint" type="multinuc"/>
+            <rel name="Same-Unit" type="multinuc"/>
+        </relations>
+    </header>
+    <body>
+        <segment id="1" parent="12" relname="Joint">Anfang der 90er Jahre veränderte die Maueröffnung gemeinsam mit der Ravekultur die gesellschaftliche Landschaft in Deutschland schlagartig .</segment>
+        <segment id="2" parent="12" relname="Joint">Auf die depressiven 80er folgte eine Generation von feierwütigen aber auch überaus kreativen Jugendlichen , die sich ihre neu gewonnenen Freiräume auf großartigste ausschmückten .</segment>
+        <segment id="3" parent="13" relname="Joint">Begleitet von einem neuen Sound und Lebensgefühl entstand eine neue Dimension von Partys , in der viele Zuflucht von einer andererseits komplexen und überfordernden Welt fanden .</segment>
+        <segment id="4" parent="13" relname="Joint">Marc-André Janizewski ist einer der Gestalter dieser Generation ,</segment>
+        <segment id="5" parent="14" relname="Joint">der gemeinsam mit seinem Kollegen Markus das Partykollektiv Pyonen begründete</segment>
+        <segment id="6" parent="14" relname="Joint">und mit der Nation of Gondwana eine der ältesten Partytraditionen der Technozeit in Deutschland etablierten</segment>
+        <segment id="7" parent="15" relname="Joint">und gemeinsam mit dem Chaos Computer Club das Chaos Communication Camp ermöglicht haben .</segment>
+        <segment id="8" parent="15" relname="Joint">Wir sprechen über Freiräume , das Techno- und das Sicherheitsgefühl , Musik und DJs , Essen und Trinken und über Motivation und Verantwortung zwischen Veranstaltern , Mitstreitern und Gästen .</segment>
+        <group id="9" type="span">
+        </group>
+        <group id="10" type="span" parent="9" relname="span">
+        </group>
+        <group id="11" type="multinuc" parent="10" relname="Elaboration">
+        </group>
+        <group id="12" type="multinuc" parent="10" relname="span">
+        </group>
+        <group id="13" type="multinuc" parent="12" relname="Elaboration">
+        </group>
+        <group id="14" type="multinuc" parent="11" relname="Same-Unit">
+        </group>
+        <group id="15" type="multinuc" parent="11" relname="Same-Unit">
+        </group>
+    </body>
+</rst>

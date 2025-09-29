@@ -1,0 +1,36 @@
+<rst>
+    <header>
+        <relations>
+            <rel name="Attribution" type="rst"/>
+            <rel name="Elaboration" type="rst"/>
+            <rel name="Joint" type="multinuc"/>
+        </relations>
+    </header>
+    <body>
+        <segment id="1" parent="17" relname="Joint">Ein Mann ist in England nach eigenen Angaben mehr als 70 Jahre lang ohne Führerschein oder Versicherung Auto gefahren.</segment>
+        <segment id="2" parent="17" relname="Joint">Wie die Polizei mitteilte, geriet der 1938 geborene Mann in der Nähe von Nottingham mit seinem Mini One in eine Routinekontrolle.</segment>
+        <segment id="3" parent="13" relname="Joint">Papiere konnte er nicht vorweisen.</segment>
+        <segment id="4" parent="14" relname="Joint">Er gab aber an, seit seinem zwölften Lebensjahr hinter dem Steuer zu sitzen, ohne je einen Führerschein oder eine Versicherung gehabt zu haben.</segment>
+        <segment id="5" parent="14" relname="Joint">"Irgendwie hat er es geschafft, nie von der Polizei angehalten zu werden", hieß es weiter in dem Facebook-Post, dessen Authentizität ein Polizeisprecher der Deutschen Presse-Agentur am Freitag bestätigte.</segment>
+        <segment id="6" parent="15" relname="Joint">Glücklicherweise sei der Mann auch nie in einen Unfall verwickelt gewesen, so die Mitteilung weiter.</segment>
+        <segment id="7" parent="15" relname="Joint">Die Kontrolle soll bereits am Mittwoch stattgefunden haben.</segment>
+        <segment id="8" parent="16" relname="Joint">Die Polizei rief Autofahrer auf, sich nicht ohne gültige Papiere hinters Steuer zu setzen.</segment>
+        <segment id="9" parent="16" relname="Joint">Die wachsende Zahl von Kameras mit automatischer Nummernschilderkennung mache es zunehmend wahrscheinlich, dass man dabei erwischt werde.</segment>
+        <group id="10" type="span">
+        </group>
+        <group id="11" type="span" parent="10" relname="span">
+        </group>
+        <group id="12" type="multinuc" parent="11" relname="Elaboration">
+        </group>
+        <group id="13" type="multinuc" parent="11" relname="span">
+        </group>
+        <group id="14" type="multinuc" parent="13" relname="Attribution">
+        </group>
+        <group id="15" type="multinuc" parent="12" relname="Joint">
+        </group>
+        <group id="16" type="multinuc" parent="12" relname="Joint">
+        </group>
+        <group id="17" type="multinuc" parent="13" relname="Joint">
+        </group>
+    </body>
+</rst>

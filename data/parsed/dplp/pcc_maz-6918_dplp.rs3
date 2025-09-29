@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?><rst>
+<rst>
   <header>
     <relations>
       <rel name="Antithesis" type="rst"/>
@@ -26,43 +26,40 @@
       <rel name="Sequence" type="multinuc"/>
       <rel name="Solutionhood" type="rst"/>
       <rel name="Summary" type="rst"/>
-      <rel name="background" type="rst"/>
+      <rel name="contrast" type="multinuc"/>
       <rel name="eelaboration" type="rst"/>
-      <rel name="elaboration" type="rst"/>
-      <rel name="evaluations" type="rst"/>
-      <rel name="evidence" type="rst"/>
-      <rel name="interpretation" type="rst"/>
+      <rel name="evaluationn" type="rst"/>
       <rel name="list" type="multinuc"/>
       <rel name="preparation" type="rst"/>
+      <rel name="purpose" type="rst"/>
       <rel name="reason" type="rst"/>
-      <rel name="reasonn" type="rst"/>
     </relations>
   </header>
   <body>
-    <segment id="5" parent="3" relname="span">CHRISTIAN BETTELS Natürliche Rückeroberung Der Naturpark , der zwischen Jüterbog , Luckenwalde und Treuenbrietzen entsteht , ist außerhalb der Region noch viel zu wenig bekannt .</segment>
-    <segment id="9" parent="7" relname="span">Deshalb ist es zu begrüßen , dass Manfred Stolpe dem weiträumigen Areal vorgestern einen Besuch abstattete .</segment>
-    <segment id="11" parent="9" relname="reason">Ein beabsichtigter Effekt solcher Dienstreisen des Ministerpräsidenten in die Provinz ist es , möglichst viel öffentliche Aufmerksamkeit auf bestimmte Vorhaben zu lenken .</segment>
-    <segment id="15" parent="13" relname="span">Um den etwa 7000 Hektar großen Naturpark soll ein Rundweg angelegt werden .</segment>
-    <segment id="21" parent="19" relname="span">Das wäre ein bedeutender Schritt zum erklärten Ziel , den ehemaligen Truppenübungsplatz touristisch zu erschließen .</segment>
-    <segment id="25" parent="23" relname="span">Die Wanderdüne bei Forst Zinna ist schon jetzt ein bei Auswärtigen und Einheimischen gleichermaßen beliebtes Ausflugsziel .</segment>
-    <segment id="29" parent="27" relname="span">Diese Art der Konversion - die Natur erobert frühere Militärflächen zurück -</segment>
-    <segment id="33" parent="31" relname="span">ist vergleichsweise billig .</segment>
-    <segment id="35" parent="33" relname="eelaboration">Die Abschnitte , auf denen möglicherweise weiterhin gefährliche Munition lagert , bleiben allerdings Sperrgebiet .</segment>
-    <segment id="41" parent="39" relname="span">Ob bei der touristischen Erschließung der Konversionsflächen auf lange Sicht neue Arbeitsplätze entstehen , hängt vor allem davon ab ,</segment>
-    <segment id="43" parent="41" relname="eelaboration">wie viele Neugierige kommen werden .</segment>
-    <segment id="47" parent="49" relname="preparation">Wie gesagt :</segment>
-    <segment id="49" parent="45" relname="span">Stolpe war schon da.</segment>
+    <segment id="3" parent="1" relname="span">Deshalb ist es zu begrüßen , dass Manfred Stolpe dem weiträumigen Areal vorgestern einen Besuch abstattete .</segment>
+    <segment id="7" parent="5" relname="span">Ein beabsichtigter Effekt solcher Dienstreisen des Ministerpräsidenten in die Provinz ist es , möglichst viel öffentliche Aufmerksamkeit auf bestimmte Vorhaben zu lenken .</segment>
+    <segment id="11" parent="9" relname="contrast">Um den etwa 7000 Hektar großen Naturpark soll ein Rundweg angelegt werden .</segment>
+    <segment id="15" parent="13" relname="span">Das wäre ein bedeutender Schritt zum erklärten Ziel , den ehemaligen Truppenübungsplatz touristisch zu erschließen .</segment>
+    <segment id="19" parent="17" relname="span">Die Wanderdüne bei Forst Zinna ist schon jetzt ein bei Auswärtigen und Einheimischen gleichermaßen beliebtes Ausflugsziel .</segment>
+    <segment id="25" parent="27" relname="evaluationn">Diese Art der Konversion - die Natur erobert frühere Militärflächen zurück -</segment>
+    <segment id="29" parent="27" relname="span">ist vergleichsweise billig .</segment>
+    <segment id="31" parent="29" relname="eelaboration">Die Abschnitte , auf denen möglicherweise weiterhin gefährliche Munition lagert , bleiben allerdings Sperrgebiet .</segment>
+    <segment id="37" parent="35" relname="span">Ob bei der touristischen Erschließung der Konversionsflächen auf lange Sicht neue Arbeitsplätze entstehen , hängt vor allem davon ab ,</segment>
+    <segment id="39" parent="37" relname="eelaboration">wie viele Neugierige kommen werden .</segment>
+    <segment id="43" parent="45" relname="preparation">Wie gesagt :</segment>
+    <segment id="47" parent="45" relname="span">Der Naturpark , der zwischen Jüterbog , Luckenwalde und Treuenbrietzen entsteht , ist außerhalb der Region noch viel zu wenig bekannt .</segment>
+    <segment id="49" parent="47" relname="reason">Stolpe war schon da .</segment>
     <group id="1" type="span"/>
-    <group id="3" type="span" parent="13" relname="background"/>
-    <group id="7" type="span" parent="5" relname="reasonn"/>
-    <group id="13" type="span" parent="1" relname="span"/>
-    <group id="17" type="multinuc" parent="15" relname="interpretation"/>
-    <group id="19" type="span" parent="17" relname="list"/>
-    <group id="23" type="span" parent="21" relname="evidence"/>
-    <group id="27" type="span" parent="25" relname="eelaboration"/>
-    <group id="31" type="span" parent="29" relname="evaluations"/>
-    <group id="37" type="span" parent="17" relname="list"/>
-    <group id="39" type="span" parent="37" relname="span"/>
-    <group id="45" type="span" parent="39" relname="elaboration"/>
+    <group id="5" type="span" parent="3" relname="reason"/>
+    <group id="9" type="multinuc" parent="7" relname="purpose"/>
+    <group id="13" type="span" parent="9" relname="contrast"/>
+    <group id="17" type="span" parent="15" relname="reason"/>
+    <group id="21" type="multinuc" parent="19" relname="reason"/>
+    <group id="23" type="span" parent="21" relname="list"/>
+    <group id="27" type="span" parent="23" relname="span"/>
+    <group id="33" type="span" parent="21" relname="list"/>
+    <group id="35" type="span" parent="33" relname="span"/>
+    <group id="41" type="span" parent="35" relname="reason"/>
+    <group id="45" type="span" parent="41" relname="span"/>
   </body>
 </rst>

@@ -8,11 +8,11 @@
     </header>
     <body>
         <segment id="1" parent="9" relname="Background">Gemeinsam mit Monika Trümper erkunden wir erstmals bei Forschergeist die Archäologie .</segment>
-        <segment id="2" parent="12" relname="Joint">Die Professorin für Klassische Archäologie an der FU Berlin erforscht die Geschichte des antiken Bades - und der damaligen Körperkultur .</segment>
+        <segment id="2" parent="12" relname="Joint">Die Professorin für Klassische Archäologie an der FU Berlin erforscht die Geschichte des antiken Bades- und der damaligen Körperkultur .</segment>
         <segment id="3" parent="12" relname="Joint">Sie beschäftigt sich mit der Planung und Entwicklung antiker Städte , Platzanlagen , der Bade- und Wohnkultur , der Bedeutung und dem Management von Wasser in antiken Heiligtümern , den archäologischen Quellen zur Wirtschaft sowie der archäologischen Erforschung der Sklaverei .</segment>
         <segment id="4" parent="13" relname="Joint">Wir lernen in dieser Episode , wie sehr sich die Arbeitsbedingungen von Archäologen mit dem Fortschreiten neuer Technologien verändern .</segment>
         <segment id="5" parent="13" relname="Joint">Der Einsatz von Drohnen oder neue Möglichkeiten in der Fotografie ermöglichen es , Grabungsstätten und Fundstücke viel detaillierter als bisher zu erfassen und für die ( wissenschaftliche ) Nachwelt zu dokumentieren .</segment>
-        <segment id="6" parent="11" relname="span">Im Rahmen eines Forschungsprojekts für den Exzellenzcluster Topoi – einem altertumswissenschaftlichen Forschungsverbund von Freier Universität und Humboldt-Universität – hat Monika Trümper in zwei römischen Bädern in Pompeji in den vergangenen Jahren Grabungen durchgeführt .</segment>
+        <segment id="6" parent="11" relname="span">Im Rahmen eines Forschungsprojekts für den Exzellenzcluster Topoi - einem altertumswissenschaftlichen Forschungsverbund von Freier Universität und Humboldt-Universität - hat Monika Trümper in zwei römischen Bädern in Pompeji in den vergangenen Jahren Grabungen durchgeführt .</segment>
         <segment id="7" parent="6" relname="Elaboration">Hier erforschte sie , wie Heiz- und Gewölbetechnik sowie Wasserversorgung über Jahrhunderte immer mehr perfektioniert worden sind .</segment>
         <group id="8" type="span">
         </group>

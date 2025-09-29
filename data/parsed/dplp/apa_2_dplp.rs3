@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?><rst>
+<rst>
   <header>
     <relations>
       <rel name="Antithesis" type="rst"/>
@@ -36,7 +36,7 @@
     </relations>
   </header>
   <body>
-    <segment id="5" parent="3" relname="span">Mann in England fuhr über 70 Jahre lang ohne Führerschein Auto Ein Mann ist in England nach eigenen Angaben mehr als 70 Jahre lang ohne Führerschein oder Versicherung Auto gefahren .</segment>
+    <segment id="5" parent="3" relname="span">Ein Mann ist in England nach eigenen Angaben mehr als 70 Jahre lang ohne Führerschein oder Versicherung Auto gefahren .</segment>
     <segment id="9" parent="7" relname="list">Wie die Polizei mitteilte ,</segment>
     <segment id="13" parent="11" relname="contrast">geriet der 1938 geborene Mann in der Nähe von Nottingham mit seinem Mini One in eine Routinekontrolle .</segment>
     <segment id="17" parent="15" relname="span">Papiere konnte er nicht vorweisen .</segment>

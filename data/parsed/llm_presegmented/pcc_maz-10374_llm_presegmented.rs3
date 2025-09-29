@@ -1,0 +1,46 @@
+<rst>
+    <header>
+        <relations>
+            <rel name="Condition" type="rst"/>
+            <rel name="Elaboration" type="rst"/>
+            <rel name="Joint" type="multinuc"/>
+            <rel name="Same-Unit" type="multinuc"/>
+        </relations>
+    </header>
+    <body>
+        <segment id="1" parent="20" relname="Joint">Mit seinem Tor zum 1:0 für die Ukraine stürzte der 1,62 Meter große Gennadi Subow die deutsche Nationalelf vorübergehend in ein Trauma .</segment>
+        <segment id="2" parent="20" relname="Joint">Nachdem den tapfer kämpfenden Gästen der Ausgleich gelungen war ,</segment>
+        <segment id="3" parent="20" relname="Elaboration">Was soll das erst morgen Abend im zweiten Spiel werden ?</segment>
+        <segment id="4" parent="21" relname="Joint">Je kleiner die Kicker daherkommen ,</segment>
+        <segment id="5" parent="21" relname="Joint">Die Fußball-Kleinmacht vom Dnepr steht kurz davor , das scheinbar mit einem Dauerabonnement für die WM ausgestattete Team in der schwarz-weißen Kluft und eine ganze Nation in das Tal der Tränen zu treiben .</segment>
+        <segment id="6" parent="17" relname="Same-Unit">Dabei haben die deutschen Nationalkicker einen " Rudi Riese " auf der Bank und einen Franz Beckenbauer mit heißem Draht zum Fußballgott .</segment>
+        <segment id="7" parent="22" relname="Joint">Fürchtet euch nicht !</segment>
+        <segment id="8" parent="22" relname="Joint">Die einstige Fußball-Weltmacht zittert vor einem Winzling .</segment>
+        <segment id="9" parent="22" relname="Elaboration">Wenn die drei Knirpse von Anbeginn wirbeln ,</segment>
+        <segment id="10" parent="23" relname="Joint">wechselte der wie eine Mumie auf der Bank sitzende ukrainische Coach noch zwei ähnliche Leichtgewichte ein .</segment>
+        <segment id="11" parent="23" relname="Joint">könnte der um Ehre und Reputation kämpfenden Mannschaft von Rudi Völler der Weg zur Weltmeisterschaft endgültig verbaut sein .</segment>
+        <segment id="12" parent="19" relname="Joint">desto größer wird der Gegner geredet .</segment>
+        <group id="13" type="multinuc">
+        </group>
+        <group id="14" type="multinuc" parent="13" relname="Joint">
+        </group>
+        <group id="15" type="span" parent="13" relname="Joint">
+        </group>
+        <group id="16" type="span" parent="14" relname="Joint">
+        </group>
+        <group id="17" type="multinuc" parent="14" relname="Joint">
+        </group>
+        <group id="18" type="span" parent="15" relname="span">
+        </group>
+        <group id="19" type="multinuc" parent="18" relname="Condition">
+        </group>
+        <group id="20" type="multinuc" parent="16" relname="span">
+        </group>
+        <group id="21" type="multinuc" parent="17" relname="Same-Unit">
+        </group>
+        <group id="22" type="multinuc" parent="18" relname="span">
+        </group>
+        <group id="23" type="multinuc" parent="19" relname="Joint">
+        </group>
+    </body>
+</rst>
