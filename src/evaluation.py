@@ -9,38 +9,43 @@
 """PARSEVAL evaluation metrics for RST trees."""
 
 from glob import glob
+import matplotlib.pyplot as plt
+import os
 import pandas as pd
 from pandas.io.formats.style import Styler
 from pathlib import Path
 import re
+import seaborn as sns
 from typing import Dict, List, Literal, Tuple, Optional
 
 from tree import Node
 from utils import load_rs3, map_fine2coarse
 
 
-def tokens_2_edus(tree: Node) -> Dict[int, int]:
-    """Map token indices to EDU indices for a given tree."""
-    tok2edu = {}
-    tok_idx = 0
-    for i, edu in enumerate(Node.tokenize(tree, "edus")):
-        for j, _ in enumerate(edu):
-            tok_idx += j
-            tok2edu[tok_idx] = i + 1
-    return tok2edu
+# def tokens_2_edus(tree: Node) -> Dict[int, int]:
+#     """Map token indices to EDU indices for a given tree."""
+#     tok2edu = {}
+#     tok_idx = 0
+#     for i, edu in enumerate(tree.edus):
+#         for j, _ in enumerate(Node.tokenize(edu, "text")):
+#             tok_idx += j
+#             tok2edu[tok_idx] = i + 1
+#     return tok2edu
 
 
 def edus2tokens(tree: Node) -> Dict[int, List[int]]:
-    toks2edus = tokens_2_edus(tree)
-    edus2tokens = {
-        edu: [] for edu in sorted(list(set(toks2edus.values())))
-    }
-    for tok_idx, edu_idx in toks2edus.items():
-        edus2tokens[edu_idx].append(tok_idx)
-    return {
-        edu: sorted(tok_indices)
-        for edu, tok_indices in edus2tokens.items()
-    }
+    """Map EDU indices to a list of token indices, spanning all tokens in the
+    EDU."""
+    res = {}
+    tok_indices = [0]
+    for i, edu in enumerate(tree.edus):
+        prev_tok_idx = tok_indices.pop(-1)
+        edu_tok_indices = list(range(
+            prev_tok_idx, prev_tok_idx + len(Node.tokenize(edu, "text"))
+        ))
+        tok_indices += edu_tok_indices
+        res[i + 1] = edu_tok_indices
+    return res
 
 
 def tree_spans_2_token_spans(tree: Node) -> Dict[
@@ -60,7 +65,7 @@ def tree_spans_2_token_spans(tree: Node) -> Dict[
             span = (desc[0].span[0], desc[-1].span[-1])
         if span not in res:
             start = edu_toks[span[0]][0]
-            end = edu_toks[span[1]][-1] + 1
+            end = edu_toks[span[1]][-1]
             res[span] = (start, end)
 
     return {
@@ -239,6 +244,134 @@ def align_constituents(
     return df
 
 
+def eval_doc(
+    doc: str, parser: str,
+    to_latex: bool = True
+) -> str | pd.DataFrame:
+    """Evaluate a single document by aligning the constituents of the gold
+    and parsed RST trees.
+    
+    :param doc: The base name of the document (without parser suffix).
+    :type doc: `str`
+    :param parser: The name of the parser (used as directory & file suffix).
+    :type parser: `str`
+    :param to_latex: Whether to return the results as a LaTeX table. Defaults to
+        `True`.
+    :type to_latex: `bool`, optional
+
+    :return: A LaTeX table or DataFrame with a multi-index of token spans and
+        columns for gold & parsed spans, nuclearity, and relation labels.
+    :rtype: `str` or `pd.DataFrame`
+    """
+    def latex_formatter(val):
+        if val is True:
+            return r"\checkmark"
+        elif val is False or val is None or pd.isna(val) or str(val).lower() == "none":
+            return ""
+        elif isinstance(val, str):
+            if val == "Nucleus":
+                return "N"
+            elif val == "Satellite":
+                return "S"
+            return val.capitalize()
+        return val
+    def df_to_latex(df: pd.DataFrame) -> str:
+        def indent_latex_table(latex_str):
+            lines = latex_str.splitlines()
+            indented_lines = []
+            for line in lines:
+                if line.strip().startswith(r"\begin{table}") or line.strip().startswith(r"\end{table}"):
+                    indented_lines.append('\t' + line)
+                else:
+                    indented_lines.append('\t\t' + line)
+            return '\n'.join(indented_lines)
+        # Format index for LaTeX
+        df.index = [f"{a},\\text{{ {b-1} }}" for a, b in df.index]
+        # Format all cells
+        df_fmt = df.map(latex_formatter)
+        # Set column format
+        latex_str = df_fmt.to_latex(
+            escape=False,
+            column_format="D{,}{,}{-1}|cc|cc|cc|cc|cc"
+        )
+        # Replace header lines programmatically
+        lines = latex_str.splitlines()
+        # Replace the two header lines after \toprule
+        lines[2] = (
+            r"\multicolumn{1}{c}{\textbf{Token-span}} & "
+            r"\multicolumn{2}{c}{\textbf{EDUs}} & "
+            r"\multicolumn{2}{c}{\textbf{Spans}} & "
+            r"\multicolumn{2}{c}{\textbf{Nuclearity}} & "
+            r"\multicolumn{2}{c}{\textbf{Relations} \small(Fine)} & "
+            r"\multicolumn{2}{c}{\textbf{Relations} \small(Coarse)} \\"
+        )
+        lines[3] = " & gold & parsed & gold & parsed & gold & parsed & gold & parsed & gold & parsed \\\\"
+        latex_str = "\n".join(lines)
+        # Remove the token_span line if present
+        latex_str = re.sub(r"^token_span\s*&.*?\\\\\n", "", latex_str, flags=re.MULTILINE)
+        # Add table environment, caption, and label
+        experiment = (
+            "LLM (Experiment 1)" if parser == "llm_without_linebreaks"
+            else "LLM (Experiment 2)" if parser == "llm_with_linebreaks"
+            else "LLM (Experiment 3)" if parser == "llm_presegmented"
+            else parser.upper()
+        )
+        caption = f"\\texttt{{{doc.replace('_', r'\_')}}} after alignment; Experiment: {experiment}"
+        label = f"tab:aligned_{doc}_{experiment.lower().replace(' (', '-').replace(' ', '_').replace('()', '')}"
+        latex_str = (
+            "\\begin{table}\n"
+            "\\resizebox{\\textwidth}{!}{\n"
+            f"{latex_str}"
+            "}\n"
+            f"\\caption{{{caption}}}\n"
+            f"\\label{{{label}}}\n"
+            "\\end{table}"
+        )
+        return indent_latex_table(latex_str)
+
+    gold_rs3 = f"C:/Users/SANDHAP/Repos/rst-parsing/data/gold_annotations/{doc}.rs3"
+    parsed_rs3 = f"C:/Users/SANDHAP/Repos/rst-parsing/data/parsed/{parser}/{doc}_{parser}.rs3"
+    gold = Node.from_rs3(
+        gold_rs3,
+        exclude_disjunct_segments=True
+    )
+    parsed = Node.from_rs3(
+        parsed_rs3,
+        exclude_disjunct_segments=True
+    )
+    # Get fine (unmapped) relations
+    df_fine = align_constituents(
+        gold, parsed, doc_name=doc,
+        map_relations=False
+    )
+    # Get coarse (mapped) relations
+    df_coarse = align_constituents(
+        gold, parsed, doc_name=doc,
+        map_relations=True
+    )
+    # Build new MultiIndex columns for relations
+    # Select all columns except "Relations"
+    base_cols = [col for col in df_fine.columns if col[0] != "Relations"]
+    # Build MultiIndex for relations
+    fine_rel = df_fine[("Relations", "gold")], df_fine[("Relations", "parsed")]
+    coarse_rel = df_coarse[("Relations", "gold")], df_coarse[("Relations", "parsed")]
+    # Concatenate all columns with correct MultiIndex
+    arrays = [
+        [col[0] for col in base_cols] + ["Relations (fine)", "Relations (fine)", "Relations (coarse)", "Relations (coarse)"],
+        [col[1] for col in base_cols] + ["gold", "parsed", "gold", "parsed"]
+    ]
+    new_columns = pd.MultiIndex.from_arrays(arrays)
+    df = pd.concat(
+        [df_fine[base_cols], fine_rel[0].rename(("Relations (fine)", "gold")), fine_rel[1].rename(("Relations (fine)", "parsed")),
+         coarse_rel[0].rename(("Relations (coarse)", "gold")), coarse_rel[1].rename(("Relations (coarse)", "parsed"))],
+        axis=1
+    )
+    df.columns = new_columns
+    if to_latex:
+        return df_to_latex(df)
+    return df
+
+
 class RSTEval:
     def __init__(
         self,
@@ -272,6 +405,7 @@ class RSTEval:
         self._caption: Optional[str] = None
         self.aligned: Dict[str, pd.DataFrame] = self._align_all(map_relations)
         self.metrics: pd.DataFrame = self._compute_metrics()
+        self.conf_matrix: plt.Figure = self._plot_confusion_matrix()
 
     def _load_data(
         self,
@@ -411,6 +545,63 @@ class RSTEval:
 
         return metrics_df
 
+    def _plot_confusion_matrix(
+        self, figsize: Tuple[int, int] = (10, 8), cmap: str = "Blues",
+        include_empty_columns: bool = False
+    ) -> plt.Figure:
+        """Plot a confusion matrix for relation labels across all documents.
+        
+        :param figsize: Size of the figure. Defaults to `(10, 8)`.
+        :type figsize: `Tuple[int, int]`, optional
+        :param cmap: matplotlib clormap for the heatmap. Defaults to `"Blues"`.
+        :type cmap: `str`, optional
+        :param include_empty_columns: Whether to include empty columns (i.e.
+            those labels that weren't used by the parser) in the confusion
+            matrix. Defaults to `False`.
+        :type include_empty_columns: `bool`, optional
+        
+        :return: The confusion matrix as a matplotlib figure.
+        :rtype: `plt.Figure`
+        """
+        all_gold = []
+        all_pred = []
+
+        for df in self.aligned.values():
+            gold = df[("Relations", "gold")].map(
+                lambda x: map_fine2coarse(x, replace_unknown=False)
+            )
+            pred = df[("Relations", "parsed")].map(
+                lambda x: map_fine2coarse(x, replace_unknown=False)
+            )
+            mask = gold.notna() & pred.notna()
+            all_gold.extend(gold[mask])
+            all_pred.extend(pred[mask])
+
+        conf_mat = pd.crosstab(
+            pd.Series(all_gold, name="Gold"),
+            pd.Series(all_pred, name="Parsed")
+        )
+        if include_empty_columns:
+            conf_mat = conf_mat.reindex(
+                columns=sorted(list(set(all_gold))), fill_value=0
+            )
+
+        plt.figure(figsize=(10, 8))
+        ax = sns.heatmap(
+            conf_mat, annot=True, fmt="d", cmap="Blues", cbar=False,
+            square=True
+        )
+        ax.tick_params(axis='both', which='both', length=0)
+        ax.xaxis.tick_top()
+        ax.xaxis.set_label_position("top")
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=60, ha='left')
+        plt.ylabel("Gold", fontweight="bold")
+        plt.xlabel("Parsed", fontweight="bold")
+        plt.tight_layout()
+        fig = ax.get_figure()
+        plt.close(fig)  # prevent double display in notebooks
+        return fig
+
     def styled(self) -> Styler:
         """Get a styled version of the metrics table for better visualization
         in Jupyter Notebooks.
@@ -526,4 +717,38 @@ class RSTEval:
             caption,
             label
         )
- 
+
+
+def main(
+    parsed_parent_dir: str = "parsed",
+    exclude_disjunct_segments: bool = True
+) -> Dict[str, RSTEval]:
+    """Evaluate all parsers in the provided parent directory by comparing
+    their parsed `.rs3` files to the gold `.rs3` files.
+
+    :param parsed_parent_dir: Name of the parent directory in the data
+        directory containing subdirectories for each parser, each with
+        their respective parsed `.rs3` files.
+    :type parsed_parent_dir: `str`
+    :param exclude_disjunct_segments: Whether to exclude disjunct segments
+        such as headings without an annotated parent when loading the
+        parsed `.rs3` files.
+    :type exclude_disjunct_segments: `bool`, optional
+
+    :return: A dictionary mapping parser names to their evaluation results.
+    :rtype: `Dict[str, RSTEval]`
+    """
+    data_dir = Path(f"{Path(os.getcwd()).parent}/data").as_posix()
+    gold_dir = Path(f"{data_dir}/gold_annotations").as_posix()
+    return {
+        p_dir: RSTEval(
+            f"{data_dir}/{parsed_parent_dir}/{p_dir}",
+            gold_dir,
+            exclude_disjunct_segments=exclude_disjunct_segments
+        ) for p_dir in os.listdir(f"{data_dir}/{parsed_parent_dir}")
+        if os.path.isdir(f"{data_dir}/{parsed_parent_dir}/{p_dir}")
+    }
+
+
+if __name__ == "__main__":
+    all_results = main()
