@@ -22,17 +22,6 @@ from tree import Node
 from utils import load_rs3, map_fine2coarse
 
 
-# def tokens_2_edus(tree: Node) -> Dict[int, int]:
-#     """Map token indices to EDU indices for a given tree."""
-#     tok2edu = {}
-#     tok_idx = 0
-#     for i, edu in enumerate(tree.edus):
-#         for j, _ in enumerate(Node.tokenize(edu, "text")):
-#             tok_idx += j
-#             tok2edu[tok_idx] = i + 1
-#     return tok2edu
-
-
 def edus2tokens(tree: Node) -> Dict[int, List[int]]:
     """Map EDU indices to a list of token indices, spanning all tokens in the
     EDU."""
@@ -547,7 +536,7 @@ class RSTEval:
 
     def _plot_confusion_matrix(
         self, figsize: Tuple[int, int] = (10, 8), cmap: str = "Blues",
-        include_empty_columns: bool = False
+        include_empty_columns: bool = True
     ) -> plt.Figure:
         """Plot a confusion matrix for relation labels across all documents.
         
@@ -565,6 +554,7 @@ class RSTEval:
         """
         all_gold = []
         all_pred = []
+        all_gold_labels = set()
 
         for df in self.aligned.values():
             gold = df[("Relations", "gold")].map(
@@ -576,6 +566,11 @@ class RSTEval:
             mask = gold.notna() & pred.notna()
             all_gold.extend(gold[mask])
             all_pred.extend(pred[mask])
+            all_gold_labels.update(gold.dropna().unique())
+        all_gold_labels = sorted(
+            lbl for lbl in all_gold_labels
+            if pd.notna(lbl)
+        )
 
         conf_mat = pd.crosstab(
             pd.Series(all_gold, name="Gold"),
@@ -583,7 +578,9 @@ class RSTEval:
         )
         if include_empty_columns:
             conf_mat = conf_mat.reindex(
-                columns=sorted(list(set(all_gold))), fill_value=0
+                index=all_gold_labels,
+                columns=all_gold_labels,
+                fill_value=0
             )
 
         plt.figure(figsize=(10, 8))
@@ -597,6 +594,38 @@ class RSTEval:
         ax.set_xticklabels(ax.get_xticklabels(), rotation=60, ha='left')
         plt.ylabel("Gold", fontweight="bold")
         plt.xlabel("Parsed", fontweight="bold")
+        plt.tight_layout()
+        fig = ax.get_figure()
+        plt.close(fig)  # prevent double display in notebooks
+        return fig
+
+    def plot_relation_distribution(
+        self, which: Literal["gold", "parsed"] = "gold",
+        figsize: Tuple[int, int] = (12, 8)
+    ) -> plt.Figure:
+        dists = {}
+        for doc, df in self.aligned.items():
+            if which == "gold":
+                counts = df.Relations.gold.value_counts()
+            else:
+                counts = df.Relations.parsed.value_counts()
+            dists[doc] = counts
+        df = pd.DataFrame.from_dict(dists).fillna(0).astype(int).T
+        ax = df.plot(kind='bar', stacked=True, figsize=figsize)
+        ax.legend(
+            title="Relation label", loc='upper right',
+            bbox_to_anchor=(0.98, 0.98)
+        )
+        ax.set_xticklabels(
+            [label.get_text().replace('blogposts_', '').replace('pcc_', '')
+             for label in ax.get_xticklabels()],
+            rotation=0, fontfamily='monospace'
+        )
+        ax.tick_params(axis='x', which='both', length=0)
+        plt.title(
+            f"Distribution of (coarse) relation labels in {which} annotations",
+            fontweight="bold"
+        )
         plt.tight_layout()
         fig = ax.get_figure()
         plt.close(fig)  # prevent double display in notebooks
