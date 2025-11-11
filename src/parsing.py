@@ -14,10 +14,7 @@ from typing import Dict, List, Literal, Optional, Union
 
 from llm_graph import parse_rst
 from tree import Node
-from utils import (
-    run_docker_container, stop_and_rm_container,
-    _init_llm
-)
+from utils import run_docker_container, stop_and_rm_container, _init_llm
 
 
 class DMRSTParser:
@@ -29,17 +26,19 @@ class DMRSTParser:
         text: Union[str, list[str]],
         ignore_size_limit: bool = False,
         multinuc_relations: Optional[List[str]] = None,
-        return_raw_parse: bool = False
+        return_raw_parse: bool = False,
     ) -> List[Dict]:
         if isinstance(text, str):
             text = [text]
         resp = requests.post(
             "http://localhost:8000/parse",
-            json={"texts": text,
-                  "batch_size": len(text),
-                  "ignore_size_limit": ignore_size_limit,
-                  "multinuc_relations": multinuc_relations,
-                  "return_raw_parse": return_raw_parse}
+            json={
+                "texts": text,
+                "batch_size": len(text),
+                "ignore_size_limit": ignore_size_limit,
+                "multinuc_relations": multinuc_relations,
+                "return_raw_parse": return_raw_parse,
+            },
         )
 
         return resp.json()
@@ -60,7 +59,7 @@ class DPLPParser:
             resp = requests.post(
                 "http://localhost:5000/dplp",
                 json={"text": t},
-                headers={"Content-Type": "application/json"}
+                headers={"Content-Type": "application/json"},
             )
             res.append(resp.json())
         return res
@@ -73,10 +72,14 @@ class LLMParser:
     def __init__(
         self,
         model: Literal[
-            "gpt-4.1", "gpt-4o", "o4-mini",
-            "claude-sonnet-4", "claude-3-7-sonnet", "claude-3-5-sonnet",
-            "claude-3-sonnet"
-        ] = "gpt-4.1"
+            "gpt-4.1",
+            "gpt-4o",
+            "o4-mini",
+            "claude-sonnet-4",
+            "claude-3-7-sonnet",
+            "claude-3-5-sonnet",
+            "claude-3-sonnet",
+        ] = "gpt-4.1",
     ):
         llm = _init_llm(model=model)
         # ensure structured output is supported
@@ -90,10 +93,10 @@ class LLMParser:
         self,
         text: Optional[Union[str, List[str]]] = None,
         edus: Optional[Union[List[str], List[List[str]]]] = None,
-        return_structured_output: bool = False
+        return_structured_output: bool = False,
     ) -> Union[List[Node], List[Dict]]:
         """Parse RST trees using an LLM and structured prompting.
-        
+
         :param text: The input text(s) to be segmented and parsed. If ´None´,
             `edus` must be provided.
         :type text: `str | List[str] | None`, optional
@@ -126,29 +129,22 @@ class LLMParser:
             return parse_rst(
                 model=self.model,
                 edus=edus,
-                return_structured_output=return_structured_output
+                return_structured_output=return_structured_output,
             )
         return parse_rst(
             model=self.model,
             text=text,
-            return_structured_output=return_structured_output
+            return_structured_output=return_structured_output,
         )
 
 
 if __name__ == "__main__":
     from utils import load_texts
 
-    texts_dir = "C:/Users/SANDHAP/Repos/rst-parsing/data/texts"
-    segmented_texts_dir = "C:/Users/SANDHAP/Repos/rst-parsing/data/segmented_texts/gold_excluding_disjunct_segments"
-
-    texts = load_texts(texts_dir)
-    segmented_texts = load_texts(segmented_texts_dir)
+    texts = load_texts()
 
     llm_rst = LLMParser("gpt-4.1")
     unsegmented_w_linebreaks_parsed = llm_rst.parse(
         text=list("".join(t) for t in texts.values())
     )
-    presegmented_parsed = llm_rst.parse(
-        edus=list(segmented_texts.values())
-    )
-    print(presegmented_parsed[0].to_rs3())
+    print(unsegmented_w_linebreaks_parsed[0].to_rs3())

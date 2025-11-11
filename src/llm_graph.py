@@ -24,12 +24,7 @@ from typing import Dict, List, Literal, Optional, Union
 from typing_extensions import Annotated
 
 from output_formats import Mononuclear, Multinuclear, EDU, Segmentation
-from tree import (
-    sorted_spans, get_child_spans, get_parent_span, get_sibling_spans,
-    get_depth, get_height, get_spans, get_adjoining_spans,
-    binarize, Node
-)
-from utils import _init_llm
+from tree import binarize, Node
 
 
 ## Data Models ##
